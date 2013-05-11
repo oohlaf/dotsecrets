@@ -1,5 +1,5 @@
 import re
-import sys
+import os
 import yaml
 
 from collections import OrderedDict
@@ -7,6 +7,18 @@ from textsub import Textsub
 from util import warning
 
 
+# Configuration file for templates
+CONFIG_FILE = '.dotbriefs.yaml'
+CONFIG_PATH = '.dotfiles'
+
+# Tag used in regex substitution for secret keys
+TAG_SECRET_KEY = '(?#Key)'
+
+# Used to tag secrets in dot files
+TAG_SECRET_START = '$DotBriefs: '
+TAG_SECRET_END = '$'
+
+# Regex shortcuts
 keyword_dict = {
         '(?#QuotedString)'       : r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\')',
         '(?#QuotedOrSingleWord)' : r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\'|\S+)',
@@ -115,7 +127,8 @@ class CleanSecret(object):
             key += self.key + '_' + unicode(self.n)
         else:
             key += self.key
-        return self._substitute.replace('(?#Key)', '$DotBrief: ' + key + '$')
+        return self._substitute.replace(TAG_SECRET_KEY,
+                TAG_SECRET_START + key + TAG_SECRET_END)
 
     def set_substitute(self, substitute):
         self._substitute = substitute
@@ -151,7 +164,10 @@ def create_config():
 
 def load_config(template_type, filename):
     if filename is None:
-        filename = '.dotbrief.yaml'
+        home_path = os.getenv('HOME', '')
+        conf_path = os.getenv('DOTBRIEFS_CONFIG_PATH',
+                os.path.join(home_path, CONFIG_PATH))
+        filename = os.path.join(conf_path, CONFIG_FILE)
     with open(filename, 'r') as config_file:
         for template in yaml.load_all(config_file):
             if template.template_type == template_type:
