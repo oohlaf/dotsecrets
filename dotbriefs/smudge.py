@@ -46,11 +46,14 @@ class SmudgeTemplate(object):
                     out += line[prev_end:m.start()]
             key = m.group(1)
             if key in self.secrets:
+                logger.debug("Replacing key '%s' with secret '%s'." % (
+                             key,
+                             self.secrets[key]))
                 out += self.secrets[key]
             else:
                 out += m.group(0)
                 logger.warning("No secret found for key '%s' in "
-                               "template '%s'" % (
+                               "template '%s'." % (
                                key,
                                self.template_type))
             prev_start = m.start()
@@ -91,10 +94,12 @@ def load_secrets(template_type, filename):
         sec_path = os.getenv('DOTBRIEFS_SECRETS_PATH',
                 os.path.join(home_path, SECRETS_PATH))
         filename = os.path.join(sec_path, SECRETS_FILE)
+    logger.debug("Opening secrets store '%s'." % filename)
     with open(filename, 'r') as secrets_file:
         for template in yaml.load_all(secrets_file):
             if template.template_type == template_type:
                 return template
+    logger.debug("No template '%s' found in secrets." % template_type)
     return None
 
 
@@ -104,7 +109,7 @@ def smudge(args):
 
     template = load_secrets(args.type, args.store)
     if template is None:
-        logger.info('No template found, using copy template.')
+        logger.warning("No template '%s' found, using copy template." % args.type)
         template = CopyTemplate()
     while 1:
         try:

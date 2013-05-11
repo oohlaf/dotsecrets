@@ -115,7 +115,11 @@ class CleanSecret(object):
                 if m.start() > prev_end:
                     out += line[prev_end:m.start()]
             self.n += 1
-            out += m.expand(self.substitute)
+            subs = m.expand(self.substitute)
+            logger.debug("Replacing '%s' with '%s'." % (
+                         m.group(0),
+                         subs))
+            out += subs
             prev_start = m.start()
             prev_end = m.end()
         if prev_end != -1:
@@ -171,11 +175,13 @@ def load_config(template_type, filename):
         conf_path = os.getenv('DOTBRIEFS_CONFIG_PATH',
                 os.path.join(home_path, CONFIG_PATH))
         filename = os.path.join(conf_path, CONFIG_FILE)
+    logger.debug("Opening configuration file '%s'." % filename)
     with open(filename, 'r') as config_file:
         for template in yaml.load_all(config_file):
             if template.template_type == template_type:
                 template.set_parent_rules()
                 return template
+    logger.debug("No template '%s' found in configuration." % template_type)
     return None
 
 
@@ -187,7 +193,7 @@ def clean(args):
 
     template = load_config(args.type, args.config)
     if template is None:
-        logger.info('No template found, using copy template.')
+        logger.warning("No template '%s' found, using copy template." % args.type)
         template = CopyTemplate()
     while 1:
         try:
