@@ -1,10 +1,13 @@
 import re
+import logging
 import os
 import yaml
 
 from collections import OrderedDict
 from textsub import Textsub
-from util import warning
+
+
+logger = logging.getLogger(__name__)
 
 
 # Configuration file for templates
@@ -184,7 +187,7 @@ def clean(args):
 
     template = load_config(args.type, args.config)
     if template is None:
-        warning("No template found")
+        logger.info('No template found, using copy template.')
         template = CopyTemplate()
     while 1:
         try:

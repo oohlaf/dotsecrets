@@ -1,11 +1,14 @@
 import re
+import logging
 import os
 import yaml
 
 from collections import OrderedDict
 
-from clean import TAG_SECRET_START, TAG_SECRET_END
-from util import warning
+from clean import TAG_SECRET_START, TAG_SECRET_END, CopyTemplate
+
+
+logger = logging.getLogger(__name__)
 
 
 # Location of default secrets store
@@ -46,9 +49,10 @@ class SmudgeTemplate(object):
                 out += self.secrets[key]
             else:
                 out += m.group(0)
-                warning("No secret found for key '%s' in template '%s'" % (
-                        key,
-                        self.template_type))
+                logger.warning("No secret found for key '%s' in"
+                               "template '%s'" % (
+                               key,
+                               self.template_type))
             prev_start = m.start()
             prev_end = m.end()
         if prev_end != -1:
@@ -100,6 +104,7 @@ def smudge(args):
 
     template = load_secrets(args.type, args.store)
     if template is None:
+        logger.info('No template found, using copy template.')
         template = CopyTemplate()
     while 1:
         try:

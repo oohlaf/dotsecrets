@@ -1,10 +1,24 @@
 #!/usr/bin/env python
 
 import argparse
+import logging
 import sys
 
 from clean import clean
 from smudge import smudge
+
+
+logger = logging.getLogger()
+logging_configured = False
+
+
+def configure_logging(args):
+    global logging_configured
+    if not logging_configured:
+        logger.setLevel(logging.DEBUG)
+        console_log = logging.StreamHandler(stream=sys.stderr)
+        logger.addHandler(console_log)
+        logging_configured = True
 
 
 def main():
@@ -33,6 +47,7 @@ def main():
     parser_smudge.set_defaults(func=smudge)
     
     args=parser.parse_args()
+    configure_logging(args)
     args.func(args)
 
 
