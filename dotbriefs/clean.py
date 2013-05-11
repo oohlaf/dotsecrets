@@ -90,7 +90,11 @@ class CleanSecret(object):
         return state
 
     def __setstate__(self, state):
-        self.__dict__.update(state)
+        self.key = state['key']
+        self.description = state['description']
+        self.numbered = state['numbered']
+        self.regex = state['regex']
+        self.substitute = state['substitute']
         self.n = 0
         self.template = None
 
