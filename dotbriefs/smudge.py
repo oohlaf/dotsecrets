@@ -9,8 +9,8 @@ from util import warning
 
 
 # Location of default secrets store
-SECRETS_FILE = '.dotsecrets.yaml'
-SECRETS_PATH = '.config'
+SECRETS_FILE = 'dotsecrets.yaml'
+SECRETS_PATH = os.path.join('.config', 'dotbriefs')
 
 
 class SmudgeTemplate(object):
