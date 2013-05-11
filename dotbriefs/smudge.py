@@ -1,16 +1,25 @@
 import re
-import sys
+import os
 import yaml
 
 from collections import OrderedDict
+
+from clean import TAG_SECRET_START, TAG_SECRET_END
 from util import warning
+
+
+# Location of default secrets store
+SECRETS_FILE = '.dotsecrets.yaml'
+SECRETS_PATH = '.config'
 
 
 class SmudgeTemplate(object):
     def __init__(self, template_type, secrets={}):
         self.template_type = template_type
         self.secrets = secrets
-        self.regex = re.compile(r'\$DotBrief: (\S+)\$')
+        regex = re.escape(TAG_SECRET_START) + r'(\S+)' + \
+                re.escape(TAG_SECRET_END)
+        self.regex = re.compile(regex)
 
     def __getstate__(self):
         state = OrderedDict()
@@ -74,7 +83,10 @@ def create_secrets():
 
 def load_secrets(template_type, filename):
     if filename is None:
-        filename = '.dotsecrets.yaml'
+        home_path = os.getenv('HOME', '')
+        sec_path = os.getenv('DOTBRIEFS_SECRETS_PATH',
+                os.path.join(home_path, SECRETS_PATH))
+        filename = os.path.join(sec_path, SECRETS_FILE)
     with open(filename, 'r') as secrets_file:
         for template in yaml.load_all(secrets_file):
             if template.template_type == template_type:
