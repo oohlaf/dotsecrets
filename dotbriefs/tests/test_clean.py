@@ -1,6 +1,6 @@
 import unittest
 
-from clean import CleanSecret
+from dotbriefs.clean import CleanSecret
 
 
 class TestCleanSecret(unittest.TestCase):
