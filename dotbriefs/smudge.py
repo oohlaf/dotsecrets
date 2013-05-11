@@ -49,7 +49,7 @@ class SmudgeTemplate(object):
                 out += self.secrets[key]
             else:
                 out += m.group(0)
-                logger.warning("No secret found for key '%s' in"
+                logger.warning("No secret found for key '%s' in "
                                "template '%s'" % (
                                key,
                                self.template_type))
