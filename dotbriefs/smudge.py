@@ -6,6 +6,7 @@ import yaml
 from collections import OrderedDict
 
 from clean import TAG_SECRET_START, TAG_SECRET_END, CopyTemplate
+from utils import is_only_user_readable
 
 
 logger = logging.getLogger(__name__)
@@ -94,13 +95,17 @@ def load_secrets(template_type, filename):
         sec_path = os.getenv('DOTBRIEFS_SECRETS_PATH',
                 os.path.join(home_path, SECRETS_PATH))
         filename = os.path.join(sec_path, SECRETS_FILE)
+    if not is_only_user_readable(filename):
+        logger.error("Insecure file permissions on secrets store '%s'.\n"
+                     "Ensure store is only read/writable by user." % filename)
+        return None
     logger.debug("Opening secrets store '%s'." % filename)
     with open(filename, 'r') as secrets_file:
         for template in yaml.load_all(secrets_file):
             if template.template_type == template_type:
                 return template
-    logger.debug("No template '%s' found in secrets." % template_type)
-    return None
+    logger.warning("No template '%s' found in secrets, using copy template." % template_type)
+    return CopyTemplate()
 
 
 def smudge(args):
@@ -109,8 +114,8 @@ def smudge(args):
 
     template = load_secrets(args.type, args.store)
     if template is None:
-        logger.warning("No template '%s' found, using copy template." % args.type)
-        template = CopyTemplate()
+        logger.debug("Could not load any template or secrets for '%s'.", args.type)
+        return
     while 1:
         try:
             line = args.input.readline()

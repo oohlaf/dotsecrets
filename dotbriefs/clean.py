@@ -185,8 +185,8 @@ def load_config(template_type, filename):
             if template.template_type == template_type:
                 template.set_parent_rules()
                 return template
-    logger.debug("No template '%s' found in configuration." % template_type)
-    return None
+    logger.warning("No template '%s' found, using copy template." % template_type)
+    return CopyTemplate()
 
 
 def clean(args):
@@ -197,8 +197,8 @@ def clean(args):
 
     template = load_config(args.type, args.config)
     if template is None:
-        logger.warning("No template '%s' found, using copy template." % args.type)
-        template = CopyTemplate()
+        logger.debug("Could not load any template for '%s'." % args.type)
+        return
     while 1:
         try:
             line = args.input.readline()
