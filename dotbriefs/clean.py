@@ -5,6 +5,7 @@ import yaml
 
 from collections import OrderedDict
 from textsub import Textsub
+from utils import CopyTemplate
 
 
 logger = logging.getLogger(__name__)
@@ -154,11 +155,6 @@ def clean_secret_representer(dumper, data):
 def clean_secret_constructor(loader, node):
     mapping = loader.construct_mapping(node)
     return CleanSecret(**mapping)
-
-
-class CopyTemplate(object):
-    def sub(self, line):
-        return line
 
 
 def create_config():
