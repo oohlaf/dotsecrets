@@ -20,17 +20,17 @@ Usage
 DotSecrets is to be used together with Git to manage your dotfiles.
 
 Git filters are used to clean and smudge secrets. Each filter is configured
-using regular expression grouped per filter type.
+using regular expression grouped per filter name.
 
 Filters
 -------
-Filter templates are defined in a file called ``.dotfilters.yaml`` inside the
+Filter rules are defined in a file called ``.dotfilters.yaml`` inside the
 dotfiles repository.
 
 It's syntax is as follows:
 .. code::
-  !Template
-  type: mutt
+  !Filter
+  name: mutt
   rules:
   - !Secret
     key: passwd
@@ -38,8 +38,8 @@ It's syntax is as follows:
     numbered: true
     regex: password(\s*)=(\s*)(?#UpToHash)
     substitute: password\1=\2(?#Key)
-  --!Template
-  type: irssi
+  --!Filter
+  name: irssi
   rules:
   - !Secret
     key: nickname
@@ -48,10 +48,10 @@ It's syntax is as follows:
     regex: nick(\s*)\w
     substitute: nick\1(?#Key)
 
-This file contains filter templates per type of filter. The first example
-defines a filter for replacing passwords in mutt configuration files. Each
-line containing the word ``password`` followed by an equal sign and each
-character (except whitespace) up to an optional hash ``#`` comment.
+This file contains filters per type of filter. The first example defines
+a filter for replacing passwords in mutt configuration files. Each line
+containing the word ``password`` followed by an equal sign and each character
+(except whitespace) up to an optional hash ``#`` comment.
 
 A match is replaced by the following: ``password = $DotSecrets: password_1$``.
 The key is appended with the number of matches.
@@ -64,19 +64,19 @@ XDG configuration directory (typically ``~/.config/dotsecrets/dotsecrets.yaml``)
 
 Its syntax is as follows:
 .. code::
-   !Template
-   type: mutt
+   !Filter
+   name: mutt
    secrets:
      password_1: s3cr3t
      question: h1dd3n 4g3nd4
-   --!Template
-   type: irssi
+   --!Filter
+   name: irssi
    secrets:
      nick: myname
      password: mypass
 
-This configuration file contains two templates named mutt and irssi. Each
-template contains one or more secrets. These secrets are used to filter the
+This configuration file contains two filters named mutt and irssi. Each
+filter contains one or more secrets. These secrets are used to filter the
 files in the Git repository.
 
 Linking filters and secrets

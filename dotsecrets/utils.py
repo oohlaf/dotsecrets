@@ -2,7 +2,7 @@ import os
 import stat
 
 
-class CopyTemplate(object):
+class CopyFilter(object):
     def sub(self, line):
         return line
 

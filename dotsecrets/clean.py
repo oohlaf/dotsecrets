@@ -5,7 +5,7 @@ import yaml
 
 from collections import OrderedDict
 from textsub import Textsub
-from utils import CopyTemplate
+from utils import CopyFilter
 
 
 logger = logging.getLogger(__name__)
@@ -33,25 +33,25 @@ keyword_sub = Textsub(keyword_dict)
 keyword_sub.compile()
 
 
-class CleanTemplate(object):
-    def __init__(self, template_type, rules=[]):
-        self.template_type = template_type
+class CleanFilter(object):
+    def __init__(self, name, rules=[]):
+        self.name = name
         self.rules = rules
         self.set_parent_rules()
 
     def __getstate__(self):
         state = OrderedDict()
-        state['type'] = self.template_type
+        state['name'] = self.name
         state['rules'] = self.rules
         return state
 
     def __setstate__(self, state):
-        self.template_type = state['type']
+        self.name = state['name']
         self.rules = state['rules']
 
     def set_parent_rules(self):
         for rule in self.rules:
-            rule.template = self
+            rule.filter = self
 
     def sub(self, line):
         for rule in self.rules:
@@ -59,16 +59,13 @@ class CleanTemplate(object):
         return line
 
 
-def clean_template_representer(dumper, data):
-    return dumper.represent_mapping(u'!Template', data.__getstate__().items(), False)
+def clean_filter_representer(dumper, data):
+    return dumper.represent_mapping(u'!Filter', data.__getstate__().items(), False)
 
 
-def clean_template_constructor(loader, node):
+def clean_filter_constructor(loader, node):
     mapping = loader.construct_mapping(node)
-    if 'type' in mapping:
-        mapping['template_type'] = mapping['type']
-        del mapping['type']
-    return CleanTemplate(**mapping)
+    return CleanFilter(**mapping)
 
 
 class CleanSecret(object):
@@ -79,7 +76,7 @@ class CleanSecret(object):
         self.regex = regex
         self.substitute = substitute
         self.n = 0
-        self.template = None
+        self.filter = None
 
     def __getstate__(self):
         state = OrderedDict()
@@ -97,7 +94,7 @@ class CleanSecret(object):
         self.regex = state['regex']
         self.substitute = state['substitute']
         self.n = 0
-        self.template = None
+        self.filter = None
 
     def get_regex(self):
         return self._regex
@@ -162,14 +159,14 @@ def create_config():
     s.append(CleanSecret("passwd",
             r'password(\s*)=(\s*)(?#QuotedOrSingleWord)',
             r'password\1=\2(?#Key)', 'Mutt passwords', True))
-    t = []
-    t.append(CleanTemplate('mutt', s))
+    f = []
+    f.append(CleanFilter('mutt', s))
     config_file = open('.dotfilters.yaml', 'w')
-    yaml.dump_all(t, config_file)
+    yaml.dump_all(f, config_file)
     config_file.close()
 
 
-def load_config(template_type, filename):
+def load_filter(name, filename):
     if filename is None:
         home_path = os.getenv('HOME', '')
         conf_path = os.getenv('DOTSECRETS_DOTFILES_PATH',
@@ -177,23 +174,23 @@ def load_config(template_type, filename):
         filename = os.path.join(conf_path, DOTFILTERS_FILE)
     logger.debug("Opening configuration file '%s'." % filename)
     with open(filename, 'r') as config_file:
-        for template in yaml.load_all(config_file):
-            if template.template_type == template_type:
-                template.set_parent_rules()
-                return template
-    logger.warning("No template '%s' found, using copy template." % template_type)
-    return CopyTemplate()
+        for f in yaml.load_all(config_file):
+            if f.name == name:
+                f.set_parent_rules()
+                return f
+    logger.warning("No filter named '%s' found, using copy filter." % name)
+    return CopyFilter()
 
 
 def clean(args):
-    yaml.add_representer(CleanTemplate, clean_template_representer)
-    yaml.add_constructor(u'!Template', clean_template_constructor)
+    yaml.add_representer(CleanFilter, clean_filter_representer)
+    yaml.add_constructor(u'!Filter', clean_filter_constructor)
     yaml.add_representer(CleanSecret, clean_secret_representer)
     yaml.add_constructor(u'!Secret', clean_secret_constructor)
 
-    template = load_config(args.type, args.config)
-    if template is None:
-        logger.debug("Could not load any template for '%s'." % args.type)
+    f = load_filter(args.type, args.config)
+    if f is None:
+        logger.debug("Could not load any filter for '%s'." % args.type)
         return
     while 1:
         try:
@@ -202,4 +199,4 @@ def clean(args):
             break
         if not line:
             break
-        args.output.write(template.sub(line))
+        args.output.write(f.sub(line))

@@ -32,7 +32,7 @@ def configure_logging(args):
 
 def main():
     parser = argparse.ArgumentParser(
-            description='Manage dot files with secrets')
+            description='Manage dotfiles with secrets')
     parser.add_argument('--log-level', metavar='LEVEL',
             choices=log_levels.keys(), default='warning',
             help="set logging to LEVEL, where LEVEL is "
@@ -48,15 +48,15 @@ def main():
             help="write output from FILE, default is '-' stdout")
 
     parser_clean = subparsers.add_parser('clean', parents=[file_parser])
-    parser_clean.add_argument('--config', metavar='FILE',
-            help='load config from FILE')
-    parser_clean.add_argument('type')
+    parser_clean.add_argument('--filter', metavar='FILE',
+            help='load filter from FILE')
+    parser_clean.add_argument('name')
     parser_clean.set_defaults(func=clean)
 
     parser_smudge = subparsers.add_parser('smudge', parents=[file_parser])
     parser_smudge.add_argument('--store', metavar='FILE',
             help='load secrets from FILE')
-    parser_smudge.add_argument('type')
+    parser_smudge.add_argument('name')
     parser_smudge.set_defaults(func=smudge)
     
     args=parser.parse_args()
