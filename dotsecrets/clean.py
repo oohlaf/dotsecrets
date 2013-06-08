@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 # Configuration file for templates
-CONFIG_FILE = '.dotfilters.yaml'
-CONFIG_PATH = 'dotfiles'
+DOTFILTERS_FILE = '.dotfilters.yaml'
+DOTFILES_PATH = 'dotfiles'
 
 # Tag used in regex substitution for secret keys
 TAG_SECRET_KEY = '(?#Key)'
@@ -172,9 +172,9 @@ def create_config():
 def load_config(template_type, filename):
     if filename is None:
         home_path = os.getenv('HOME', '')
-        conf_path = os.getenv('DOTSECRETS_CONFIG_PATH',
-                os.path.join(home_path, CONFIG_PATH))
-        filename = os.path.join(conf_path, CONFIG_FILE)
+        conf_path = os.getenv('DOTSECRETS_DOTFILES_PATH',
+                os.path.join(home_path, DOTFILES_PATH))
+        filename = os.path.join(conf_path, DOTFILTERS_FILE)
     logger.debug("Opening configuration file '%s'." % filename)
     with open(filename, 'r') as config_file:
         for template in yaml.load_all(config_file):
