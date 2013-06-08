@@ -13,7 +13,7 @@ requires = [
     ]
 
 
-setup(name='dotbriefs',
+setup(name='dotsecrets',
       version='0.0',
       description='Manage dot files with secrets in Git',
       long_description=README + '\n\n' + CHANGES,
@@ -28,10 +28,10 @@ setup(name='dotbriefs',
         ],
       author='Olaf Conradi',
       author_email='olaf@conradi.org',
-      url='https://github.com/oohlaf/dotbriefs',
+      url='https://github.com/oohlaf/dotsecrets',
       keywords='dotfiles git secret manage private',
       packages=find_packages(),
       install_requires=requires,
       tests_require=requires,
-      test_suite="dotbriefs.tests",
+      test_suite="dotsecrets.tests",
       )

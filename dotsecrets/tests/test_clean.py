@@ -1,6 +1,6 @@
 import unittest
 
-from dotbriefs.clean import CleanSecret
+from dotsecrets.clean import CleanSecret
 
 
 class TestCleanSecret(unittest.TestCase):
@@ -49,46 +49,46 @@ class TestCleanSecret(unittest.TestCase):
         """Test uptohash single match"""
         line = 'password =   df35@$^%ds'
         out = self.secrets[0].sub(line)
-        self.assertEqual(out, 'password =   $DotBriefs: passwd_1$')
+        self.assertEqual(out, 'password =   $DotSecrets: passwd_1$')
 
     def test_sub_uth_single_match_comment(self):
         """Test uptohash single match with comment"""
         line = 'password =   df35@$^%ds    # comment'
         out = self.secrets[0].sub(line)
-        self.assertEqual(out, 'password =   $DotBriefs: passwd_1$    # comment')
+        self.assertEqual(out, 'password =   $DotSecrets: passwd_1$    # comment')
 
     def test_sub_uth_single_match_inside_comment(self):
         """Test uptohash single match inside comment"""
         line = '#password =   df35@$^%ds    # comment'
         out = self.secrets[0].sub(line)
-        self.assertEqual(out, '#password =   $DotBriefs: passwd_1$    # comment')
+        self.assertEqual(out, '#password =   $DotSecrets: passwd_1$    # comment')
 
     def test_sub_uth_double_match_in_comment(self):
         """Test uptohash one match before comment, other match inside comment"""
         line = 'password =   df35@$^%ds    # comment password = qsd&t63 # comment'
         out = self.secrets[0].sub(line)
-        self.assertEqual(out, 'password =   $DotBriefs: passwd_1$    # comment password = $DotBriefs: passwd_2$ # comment')
+        self.assertEqual(out, 'password =   $DotSecrets: passwd_1$    # comment password = $DotSecrets: passwd_2$ # comment')
 
     def test_sub_qs_single_match(self):
         """Test quotedstring single match two times"""
         line = 'password = "df35@$^%ds"'
         out = self.secrets[1].sub(line)
-        self.assertEqual(out, 'password = $DotBriefs: passwd_1$')
+        self.assertEqual(out, 'password = $DotSecrets: passwd_1$')
         line = "password = 'df35@$^%ds'"
         out = self.secrets[1].sub(line)
-        self.assertEqual(out, 'password = $DotBriefs: passwd_2$')
+        self.assertEqual(out, 'password = $DotSecrets: passwd_2$')
 
     def test_sub_qs_single_match_inner_dquotes(self):
         """Test quotedstring single match with inner double quotes"""
         line = 'password = "df35\\"@\\"$^%ds"'
         out = self.secrets[1].sub(line)
-        self.assertEqual(out, 'password = $DotBriefs: passwd_1$')
+        self.assertEqual(out, 'password = $DotSecrets: passwd_1$')
 
     def test_sub_qs_single_match_inner_squotes(self):
         """Test quotedstring single match with inner single quotes"""
         line = 'password = "df35\'@\'$^%ds"'
         out = self.secrets[1].sub(line)
-        self.assertEqual(out, 'password = $DotBriefs: passwd_1$')
+        self.assertEqual(out, 'password = $DotSecrets: passwd_1$')
 
 
 if __name__ == '__main__':

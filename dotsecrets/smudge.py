@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 # Location of default secrets store
 SECRETS_FILE = 'dotsecrets.yaml'
-SECRETS_PATH = os.path.join('.config', 'dotbriefs')
+SECRETS_PATH = os.path.join('.config', 'dotsecrets')
 
 
 class SmudgeTemplate(object):
@@ -92,7 +92,7 @@ def create_secrets():
 def load_secrets(template_type, filename):
     if filename is None:
         home_path = os.getenv('HOME', '')
-        sec_path = os.getenv('DOTBRIEFS_SECRETS_PATH',
+        sec_path = os.getenv('DOTSECRETS_PATH',
                 os.path.join(home_path, SECRETS_PATH))
         filename = os.path.join(sec_path, SECRETS_FILE)
     if not is_only_user_readable(filename):

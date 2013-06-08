@@ -12,14 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 # Configuration file for templates
-CONFIG_FILE = '.dotbriefs.yaml'
-CONFIG_PATH = '.dotfiles'
+CONFIG_FILE = '.dotfilters.yaml'
+CONFIG_PATH = 'dotfiles'
 
 # Tag used in regex substitution for secret keys
 TAG_SECRET_KEY = '(?#Key)'
 
 # Used to tag secrets in dot files
-TAG_SECRET_START = '$DotBriefs: '
+TAG_SECRET_START = '$DotSecrets: '
 TAG_SECRET_END = '$'
 
 # Regex shortcuts
@@ -164,7 +164,7 @@ def create_config():
             r'password\1=\2(?#Key)', 'Mutt passwords', True))
     t = []
     t.append(CleanTemplate('mutt', s))
-    config_file = open('.dotbrief.yaml', 'w')
+    config_file = open('.dotfilters.yaml', 'w')
     yaml.dump_all(t, config_file)
     config_file.close()
 
@@ -172,7 +172,7 @@ def create_config():
 def load_config(template_type, filename):
     if filename is None:
         home_path = os.getenv('HOME', '')
-        conf_path = os.getenv('DOTBRIEFS_CONFIG_PATH',
+        conf_path = os.getenv('DOTSECRETS_CONFIG_PATH',
                 os.path.join(home_path, CONFIG_PATH))
         filename = os.path.join(conf_path, CONFIG_FILE)
     logger.debug("Opening configuration file '%s'." % filename)

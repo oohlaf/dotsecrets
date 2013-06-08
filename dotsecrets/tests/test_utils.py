@@ -1,6 +1,6 @@
 import unittest
 
-from dotbriefs.utils import CopyTemplate
+from dotsecrets.utils import CopyTemplate
 
 
 class TestUtils(unittest.TestCase):
