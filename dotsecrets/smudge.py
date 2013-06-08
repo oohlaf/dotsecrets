@@ -109,9 +109,9 @@ def smudge(args):
     yaml.add_representer(SmudgeFilter, smudge_filter_representer)
     yaml.add_constructor(u'!Filter', smudge_filter_constructor)
 
-    f = load_secrets(args.type, args.store)
+    f = load_secrets(args.name, args.store)
     if f is None:
-        logger.debug("Could not load any filter or secrets for '%s'.", args.type)
+        logger.debug("Could not load any filter or secrets for '%s'.", args.name)
         return
     while 1:
         try:

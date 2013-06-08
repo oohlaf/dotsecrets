@@ -48,8 +48,8 @@ def main():
             help="write output from FILE, default is '-' stdout")
 
     parser_clean = subparsers.add_parser('clean', parents=[file_parser])
-    parser_clean.add_argument('--filter', metavar='FILE',
-            help='load filter from FILE')
+    parser_clean.add_argument('--filters', metavar='FILE',
+            help='load filters from FILE')
     parser_clean.add_argument('name')
     parser_clean.set_defaults(func=clean)
 

@@ -188,9 +188,9 @@ def clean(args):
     yaml.add_representer(CleanSecret, clean_secret_representer)
     yaml.add_constructor(u'!Secret', clean_secret_constructor)
 
-    f = load_filter(args.type, args.config)
+    f = load_filter(args.name, args.config)
     if f is None:
-        logger.debug("Could not load any filter for '%s'." % args.type)
+        logger.debug("Could not load any filter for '%s'." % args.name)
         return
     while 1:
         try:
