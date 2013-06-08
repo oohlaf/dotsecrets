@@ -11,7 +11,7 @@ from utils import CopyFilter
 logger = logging.getLogger(__name__)
 
 
-# Configuration file for templates
+# Configuration file for filters
 DOTFILTERS_FILE = '.dotfilters.yaml'
 DOTFILES_PATH = 'dotfiles'
 
@@ -154,16 +154,16 @@ def clean_secret_constructor(loader, node):
     return CleanSecret(**mapping)
 
 
-def create_config():
+def create_filters():
     s = []
     s.append(CleanSecret("passwd",
             r'password(\s*)=(\s*)(?#QuotedOrSingleWord)',
             r'password\1=\2(?#Key)', 'Mutt passwords', True))
     f = []
     f.append(CleanFilter('mutt', s))
-    config_file = open('.dotfilters.yaml', 'w')
-    yaml.dump_all(f, config_file)
-    config_file.close()
+    filters_file = open('.dotfilters.yaml', 'w')
+    yaml.dump_all(f, filters_file)
+    filters_file.close()
 
 
 def load_filter(name, filename):
@@ -172,9 +172,9 @@ def load_filter(name, filename):
         conf_path = os.getenv('DOTSECRETS_DOTFILES_PATH',
                 os.path.join(home_path, DOTFILES_PATH))
         filename = os.path.join(conf_path, DOTFILTERS_FILE)
-    logger.debug("Opening configuration file '%s'." % filename)
-    with open(filename, 'r') as config_file:
-        for f in yaml.load_all(config_file):
+    logger.debug("Opening file '%s'." % filename)
+    with open(filename, 'r') as filters_file:
+        for f in yaml.load_all(filters_file):
             if f.name == name:
                 f.set_parent_rules()
                 return f
@@ -188,9 +188,9 @@ def clean(args):
     yaml.add_representer(CleanSecret, clean_secret_representer)
     yaml.add_constructor(u'!Secret', clean_secret_constructor)
 
-    f = load_filter(args.name, args.config)
+    f = load_filter(args.name, args.filters)
     if f is None:
-        logger.debug("Could not load any filter for '%s'." % args.name)
+        logger.debug("Could not load any filter named '%s'." % args.name)
         return
     while 1:
         try:
