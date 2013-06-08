@@ -45,7 +45,7 @@ It's syntax is as follows:
     key: nickname
     description: IRC nickname
     numbered: false
-    regex: nick(\s*)\w
+    regex: nick(\s*)\w+
     substitute: nick\1(?#Key)
 
 This file contains filters per type of filter. The first example defines
