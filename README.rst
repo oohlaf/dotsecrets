@@ -94,12 +94,12 @@ Contents of ``.gitconfig``:
   [filter "mutt"]
     clean = dotsecrets clean mutt
     smudge = dotsecrets smudge mutt
-    required
+    required = true
 
   [filter "irssi"]
     clean = dotsecrets clean irssi
     smudge = dotsecrets smudge irssi
-    required
+    required = true
 
 When checking in files with Git, the clean command is run for those files that
 match the pattern given in ``.gitattributes``. When checking out files that
@@ -107,6 +107,7 @@ have a filter defined, the smudge command substitutes the secrets again.
 
 git config filter.mutt.clean "dotsecrets clean mutt"
 git config filter.mutt.smudge "dotsecrets smudge mutt"
+git config filter.mutt.required true
 
 ...
 References
