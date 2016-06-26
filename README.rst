@@ -20,7 +20,7 @@ Installation
 Run:
   $ pip install .
 
-You should then have a 'dotfiles' script in a new shell.
+You should then have a 'dotsecrets' script available in a new shell.
 
 Usage
 -----
