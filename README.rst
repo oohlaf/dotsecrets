@@ -15,6 +15,13 @@ Dependencies
 ------------
 DotSecrets depends on pyyaml for reading configuration files.
 
+Installation
+------------
+Run:
+  $ pip install .
+
+You should then have a 'dotsecrets' script available in a new shell.
+
 Usage
 -----
 DotSecrets is to be used together with Git to manage your dotfiles.

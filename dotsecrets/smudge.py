@@ -75,17 +75,6 @@ def smudge_filter_constructor(loader, node):
     return SmudgeFilter(**mapping)
 
 
-def create_secrets():
-    s = {}
-    s['passwd_1'] = 'H0p1a'
-    s['passwd_2'] = 'sdfweg'
-    f = []
-    f.append(SmudgeFilter('mutt', s))
-    secrets_file = open('.dotsecrets.yaml', 'w')
-    yaml.dump_all(f, secrets_file, default_flow_style=False)
-    secrets_file.close()
-
-
 def load_secrets(name, filename):
     if filename is None:
         home_path = os.getenv('HOME', '')
