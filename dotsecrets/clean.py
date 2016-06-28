@@ -154,18 +154,6 @@ def clean_secret_constructor(loader, node):
     return CleanSecret(**mapping)
 
 
-def create_filters():
-    s = []
-    s.append(CleanSecret("passwd",
-            r'password(\s*)=(\s*)(?#QuotedOrSingleWord)',
-            r'password\1=\2(?#Key)', 'Mutt passwords', True))
-    f = []
-    f.append(CleanFilter('mutt', s))
-    filters_file = open('.dotfilters.yaml', 'w')
-    yaml.dump_all(f, filters_file)
-    filters_file.close()
-
-
 def load_filter(name, filename):
     if filename is None:
         home_path = os.getenv('HOME', '')
