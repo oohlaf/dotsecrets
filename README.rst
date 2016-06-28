@@ -87,10 +87,9 @@ is replaced by ``nick $DotSecrets: nickname$``.
 
 The regular expressions and substitutions follow the Python regular expression
 syntax [5]_. Substitutions can reference regex groups ``(...)`` using
-``\number`` syntax.
-
-To make it easier to define complex regular expressions, the following
-shortcuts are available. They are defined as regex comments ``(?#...)``::
+``\number`` syntax. To make it easier to define complex regular expressions,
+the following hortcuts are available. They are defined as regex comments
+``(?#...)``:
 
     ======================  ==================================================
     Shortcut                Description
