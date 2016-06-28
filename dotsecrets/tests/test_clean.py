@@ -8,20 +8,23 @@ class TestCleanSecret(unittest.TestCase):
     def setUp(self):
         self.secrets = []
         self.secrets.append(CleanSecret('passwd',
-            r'password(\s*)=(\s*)(?#UpToHash)',
-            r'password\1=\2(?#Key)',
-            'Mutt passwords',
-            True))
+                                        r'password(\s*)=(\s*)'
+                                        r'(?#UpToHash)',
+                                        r'password\1=\2(?#Key)',
+                                        'Mutt passwords',
+                                        True))
         self.secrets.append(CleanSecret('passwd',
-            r'password(\s*)=(\s*)(?#QuotedString)',
-            r'password\1=\2(?#Key)',
-            'Mutt passwords',
-            True))
+                                        r'password(\s*)=(\s*)'
+                                        r'(?#QuotedString)',
+                                        r'password\1=\2(?#Key)',
+                                        'Mutt passwords',
+                                        True))
         self.secrets.append(CleanSecret('abc',
-            r'password(\s*)=(\s*)(?#DoesNotExist)',
-            r'password\1=\2(?#Key)',
-            'Mutt passwords',
-            True))
+                                        r'password(\s*)=(\s*)'
+                                        r'(?#DoesNotExist)',
+                                        r'password\1=\2(?#Key)',
+                                        'Mutt passwords',
+                                        True))
 
     def test_state(self):
         """Test getting and setting state"""
@@ -33,11 +36,14 @@ class TestCleanSecret(unittest.TestCase):
     def test_regex_sub(self):
         """Test regex substitution with predefined short cuts"""
         self.assertEqual(self.secrets[0].regex.pattern,
-                r'password(\s*)=(\s*)([^\s#]+(?:[ \t\v\f]*[^\s#]+)+)')
+                         r'password(\s*)=(\s*)'
+                         r'([^\s#]+(?:[ \t\v\f]*[^\s#]+)+)')
         self.assertEqual(self.secrets[1].regex.pattern,
-                r'password(\s*)=(\s*)("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\')')
+                         r'password(\s*)=(\s*)'
+                         r'("[^"\\]*(?:\\.[^"\\]*)*'
+                         r'"|\'[^\'\\]*(?:\\.[^\'\\]*)*\')')
         self.assertEqual(self.secrets[2].regex.pattern,
-                r'password(\s*)=(\s*)(?#DoesNotExist)')
+                         r'password(\s*)=(\s*)(?#DoesNotExist)')
 
     def test_sub_uth_no_match(self):
         """Test uptohash copy line on no match"""
@@ -55,19 +61,25 @@ class TestCleanSecret(unittest.TestCase):
         """Test uptohash single match with comment"""
         line = 'password =   df35@$^%ds    # comment'
         out = self.secrets[0].sub(line)
-        self.assertEqual(out, 'password =   $DotSecrets: passwd_1$    # comment')
+        self.assertEqual(out,
+                         'password =   $DotSecrets: passwd_1$    # comment')
 
     def test_sub_uth_single_match_inside_comment(self):
         """Test uptohash single match inside comment"""
         line = '#password =   df35@$^%ds    # comment'
         out = self.secrets[0].sub(line)
-        self.assertEqual(out, '#password =   $DotSecrets: passwd_1$    # comment')
+        self.assertEqual(out,
+                         '#password =   $DotSecrets: passwd_1$    # comment')
 
     def test_sub_uth_double_match_in_comment(self):
-        """Test uptohash one match before comment, other match inside comment"""
-        line = 'password =   df35@$^%ds    # comment password = qsd&t63 # comment'
+        """Test uptohash one match before comment,
+        other match inside comment"""
+        line = 'password =   df35@$^%ds    ' + \
+               '# comment password = qsd&t63 # comment'
         out = self.secrets[0].sub(line)
-        self.assertEqual(out, 'password =   $DotSecrets: passwd_1$    # comment password = $DotSecrets: passwd_2$ # comment')
+        self.assertEqual(out,
+                         'password =   $DotSecrets: passwd_1$    # comment '
+                         'password = $DotSecrets: passwd_2$ # comment')
 
     def test_sub_qs_single_match(self):
         """Test quotedstring single match two times"""

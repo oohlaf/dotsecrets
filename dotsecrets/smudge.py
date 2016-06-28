@@ -47,16 +47,13 @@ class SmudgeFilter(object):
                     out += line[prev_end:m.start()]
             key = m.group(1)
             if key in self.secrets:
-                logger.debug("Replacing key '%s' with secret '%s'." % (
-                             key,
-                             self.secrets[key]))
+                logger.debug("Replacing key '%s' with secret '%s'.",
+                             key, self.secrets[key])
                 out += self.secrets[key]
             else:
                 out += m.group(0)
-                logger.warning("No secret found for key '%s' in "
-                               "filter '%s'." % (
-                               key,
-                               self.name))
+                logger.warning("No secret found for key '%s' in filter '%s'.",
+                               key, self.name)
             prev_start = m.start()
             prev_end = m.end()
         if prev_end != -1:
@@ -67,7 +64,8 @@ class SmudgeFilter(object):
 
 
 def smudge_filter_representer(dumper, data):
-    return dumper.represent_mapping(u'!Filter', data.__getstate__().items(), False)
+    return dumper.represent_mapping(u'!Filter', data.__getstate__().items(),
+                                    False)
 
 
 def smudge_filter_constructor(loader, node):
@@ -79,18 +77,19 @@ def load_secrets(name, filename):
     if filename is None:
         home_path = os.getenv('HOME', '')
         sec_path = os.getenv('DOTSECRETS_PATH',
-                os.path.join(home_path, SECRETS_PATH))
+                             os.path.join(home_path, SECRETS_PATH))
         filename = os.path.join(sec_path, SECRETS_FILE)
     if not is_only_user_readable(filename):
         logger.error("Insecure file permissions on secrets store '%s'.\n"
-                     "Ensure store is only read/writable by user." % filename)
+                     "Ensure store is only read/writable by user.", filename)
         return None
     logger.debug("Opening secrets store '%s'." % filename)
     with open(filename, 'r') as secrets_file:
         for f in yaml.load_all(secrets_file):
             if f.name == name:
                 return f
-    logger.warning("No filter named '%s' found in secrets, using copy filter." % name)
+    logger.warning("No filter named '%s' found in secrets, using copy filter.",
+                   name)
     return CopyFilter()
 
 
@@ -100,7 +99,8 @@ def smudge(args):
 
     f = load_secrets(args.name, args.store)
     if f is None:
-        logger.debug("Could not load any filter or secrets for '%s'.", args.name)
+        logger.debug("Could not load any filter or secrets for '%s'.",
+                     args.name)
         return
     while 1:
         try:

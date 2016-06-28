@@ -7,7 +7,7 @@ import UserDict
 
 
 class Textsub(UserDict.UserDict):
-    def __init__(self, dict = None):
+    def __init__(self, dict=None):
         self.re = None
         self.regex = None
         UserDict.UserDict.__init__(self, dict)

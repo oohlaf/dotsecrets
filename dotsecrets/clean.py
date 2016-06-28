@@ -24,10 +24,10 @@ TAG_SECRET_END = '$'
 
 # Regex shortcuts
 keyword_dict = {
-        '(?#QuotedString)'       : r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\')',
-        '(?#QuotedOrSingleWord)' : r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\'|\S+)',
-        '(?#UpToHash)'           : r'([^\s#]+(?:[ \t\v\f]*[^\s#]+)+)',
-        '(?#UpToSemicolon)'      : r'([^\s;]+(?:[ \t\v\f]*[^\s;]+)+)',
+    '(?#QuotedString)'       : r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\')',
+    '(?#QuotedOrSingleWord)' : r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\'|\S+)',
+    '(?#UpToHash)'           : r'([^\s#]+(?:[ \t\v\f]*[^\s#]+)+)',
+    '(?#UpToSemicolon)'      : r'([^\s;]+(?:[ \t\v\f]*[^\s;]+)+)',
 }
 keyword_sub = Textsub(keyword_dict)
 keyword_sub.compile()
@@ -118,9 +118,7 @@ class CleanSecret(object):
                     out += line[prev_end:m.start()]
             self.n += 1
             subs = m.expand(self.substitute)
-            logger.debug("Replacing '%s' with '%s'." % (
-                         m.group(0),
-                         subs))
+            logger.debug("Replacing '%s' with '%s'.", m.group(0), subs)
             out += subs
             prev_start = m.start()
             prev_end = m.end()
@@ -137,7 +135,7 @@ class CleanSecret(object):
         else:
             key += self.key
         return self._substitute.replace(TAG_SECRET_KEY,
-                TAG_SECRET_START + key + TAG_SECRET_END)
+                                        TAG_SECRET_START + key + TAG_SECRET_END)
 
     def set_substitute(self, substitute):
         self._substitute = substitute
@@ -158,15 +156,15 @@ def load_filter(name, filename):
     if filename is None:
         home_path = os.getenv('HOME', '')
         conf_path = os.getenv('DOTSECRETS_DOTFILES_PATH',
-                os.path.join(home_path, DOTFILES_PATH))
+                              os.path.join(home_path, DOTFILES_PATH))
         filename = os.path.join(conf_path, DOTFILTERS_FILE)
-    logger.debug("Opening file '%s'." % filename)
+    logger.debug("Opening file '%s'.", filename)
     with open(filename, 'r') as filters_file:
         for f in yaml.load_all(filters_file):
             if f.name == name:
                 f.set_parent_rules()
                 return f
-    logger.warning("No filter named '%s' found, using copy filter." % name)
+    logger.warning("No filter named '%s' found, using copy filter.", name)
     return CopyFilter()
 
 
@@ -178,7 +176,7 @@ def clean(args):
 
     f = load_filter(args.name, args.filters)
     if f is None:
-        logger.debug("Could not load any filter named '%s'." % args.name)
+        logger.debug("Could not load any filter named '%s'.", args.name)
         return
     while 1:
         try:
