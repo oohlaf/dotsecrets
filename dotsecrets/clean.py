@@ -1,9 +1,10 @@
 import re
 import logging
 import os
-import yaml
 
 from collections import OrderedDict
+
+import yaml
 
 from dotsecrets.textsub import Textsub
 from dotsecrets.utils import CopyFilter
@@ -35,7 +36,9 @@ keyword_sub.compile()
 
 
 class CleanFilter(object):
-    def __init__(self, name, rules=[]):
+    def __init__(self, name, rules=None):
+        if rules is None:
+            rules = []
         self.name = name
         self.rules = rules
         self.set_parent_rules()

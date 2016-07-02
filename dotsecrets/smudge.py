@@ -1,9 +1,10 @@
 import re
 import logging
 import os
-import yaml
 
 from collections import OrderedDict
+
+import yaml
 
 from dotsecrets.clean import TAG_SECRET_START, TAG_SECRET_END
 from dotsecrets.utils import CopyFilter, is_only_user_readable
@@ -18,7 +19,9 @@ SECRETS_PATH = os.path.join('.config', 'dotsecrets')
 
 
 class SmudgeFilter(object):
-    def __init__(self, name, secrets={}):
+    def __init__(self, name, secrets=None):
+        if secrets is None:
+            secrets = {}
         self.name = name
         self.secrets = secrets
         regex = re.escape(TAG_SECRET_START) + r'(\S+)' + \
@@ -83,7 +86,7 @@ def load_secrets(name, filename):
         logger.error("Insecure file permissions on secrets store '%s'.\n"
                      "Ensure store is only read/writable by user.", filename)
         return None
-    logger.debug("Opening secrets store '%s'." % filename)
+    logger.debug("Opening secrets store '%s'.", filename)
     with open(filename, 'r') as secrets_file:
         for f in yaml.load_all(secrets_file):
             if f.name == name:
