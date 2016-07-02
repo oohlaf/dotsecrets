@@ -5,8 +5,8 @@ import yaml
 
 from collections import OrderedDict
 
-from clean import TAG_SECRET_START, TAG_SECRET_END
-from utils import CopyFilter, is_only_user_readable
+from dotsecrets.clean import TAG_SECRET_START, TAG_SECRET_END
+from dotsecrets.utils import CopyFilter, is_only_user_readable
 
 
 logger = logging.getLogger(__name__)

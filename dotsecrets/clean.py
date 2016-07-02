@@ -4,8 +4,9 @@ import os
 import yaml
 
 from collections import OrderedDict
-from textsub import Textsub
-from utils import CopyFilter
+
+from dotsecrets.textsub import Textsub
+from dotsecrets.utils import CopyFilter
 
 
 logger = logging.getLogger(__name__)

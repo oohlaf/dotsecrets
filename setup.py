@@ -32,7 +32,7 @@ setup(name='dotsecrets',
       keywords='dotfiles git secret manage private',
       packages=find_packages(),
       entry_points = {
-          'console_scripts': ['dotsecrets=dotsecrets.dotsecrets:main'],
+          'console_scripts': ['dotsecrets=dotsecrets.main:main'],
       },
       install_requires=requires,
       tests_require=requires,

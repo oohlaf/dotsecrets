@@ -4,8 +4,8 @@ import argparse
 import logging
 import sys
 
-from clean import clean
-from smudge import smudge
+from dotsecrets.clean import clean
+from dotsecrets.smudge import smudge
 
 
 logger = logging.getLogger()
