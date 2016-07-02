@@ -91,19 +91,18 @@ syntax [5]_. Substitutions can reference regex groups ``(...)`` using
 the following hortcuts are available. They are defined as regex comments
 ``(?#...)``:
 
-    ======================  ==================================================
-    Shortcut                Description
-    ======================  ==================================================
-    (?#QuotedString)        Matches balanced single or double quoted strings
-                            and is able to cope with escaped quote symbols
-                            within the string
-    (?#QuotedOrSingleWord)  Same as QuotedString or an unquoted single word of
-                            non-whitespace characters
-    (?#UpToHash)            Matches whitespace up to the hash symbol ``#``
-    (?#UpToSemicolon)       Matches whitespace up to the semi colon symbol
-                            ``;``
-    (?#Key)                 Used to substitute the secret
-    ======================  ==================================================
+======================  ====================================================
+Shortcut                Description
+======================  ====================================================
+(?#QuotedString)        Matches balanced single or double quoted strings and
+                        is able to cope with escaped quote symbols within
+                        the string
+(?#QuotedOrSingleWord)  Same as QuotedString or an unquoted single word of
+                        non-whitespace characters
+(?#UpToHash)            Matches whitespace up to the hash symbol ``#``
+(?#UpToSemicolon)       Matches whitespace up to the semi colon symbol ``;``
+(?#Key)                 Used to substitute the secret
+======================  ====================================================
 
 
 Secrets
