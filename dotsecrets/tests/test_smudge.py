@@ -1,3 +1,4 @@
+import logging
 import unittest
 
 from dotsecrets.smudge import SmudgeFilter
@@ -6,6 +7,7 @@ from dotsecrets.smudge import SmudgeFilter
 class TestSmudgeFilter(unittest.TestCase):
 
     def setUp(self):
+        logging.basicConfig()
         self.secrets = {}
         self.secrets['password'] = 's3cr3t'
         self.secrets['question'] = 'h1dd3n 4g3nd4'

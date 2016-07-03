@@ -1,3 +1,4 @@
+import logging
 import unittest
 
 from dotsecrets.clean import CleanSecret
@@ -6,6 +7,7 @@ from dotsecrets.clean import CleanSecret
 class TestCleanSecret(unittest.TestCase):
 
     def setUp(self):
+        logging.basicConfig()
         self.secrets = []
         self.secrets.append(CleanSecret('passwd',
                                         r'password(\s*)=(\s*)'
