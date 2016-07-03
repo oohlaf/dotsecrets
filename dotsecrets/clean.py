@@ -74,6 +74,11 @@ def clean_filter_constructor(loader, node):
 
 class CleanSecret(object):
     def __init__(self, key, regex, substitute, description='', numbered=False):
+        # Define property internals
+        self._substitute = None
+        self._regex = None
+        self._orig_regex = None
+        # Initialize object with arguments
         self.key = key
         self.description = description
         self.numbered = numbered
