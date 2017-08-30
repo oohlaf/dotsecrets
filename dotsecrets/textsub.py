@@ -3,14 +3,18 @@
 # This implementation by alane@sourceforge.net.
 
 import re
-import UserDict
+
+try:
+    from UserDict import UserDict
+except ImportError:
+    from collections import UserDict
 
 
-class Textsub(UserDict.UserDict):
+class Textsub(UserDict):
     def __init__(self, dict=None):
         self.re = None
         self.regex = None
-        UserDict.UserDict.__init__(self, dict)
+        UserDict.__init__(self, dict)
 
     def compile(self):
         if len(self.data) > 0:
