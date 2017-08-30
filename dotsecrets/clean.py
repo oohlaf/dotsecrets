@@ -140,7 +140,10 @@ class CleanSecret(object):
     def get_substitute(self):
         key = ''
         if self.numbered:
-            key += self.key + '_' + unicode(self.n)
+            try:
+                key += self.key + '_' + unicode(self.n)
+            except NameError:
+                key += self.key + '_' + str(self.n)
         else:
             key += self.key
         return self._substitute.replace(TAG_SECRET_KEY,
