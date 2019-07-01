@@ -2,8 +2,6 @@ import re
 import logging
 import os
 
-from collections import OrderedDict
-
 import yaml
 
 from dotsecrets.clean import TAG_SECRET_START, TAG_SECRET_END
@@ -24,19 +22,14 @@ class SmudgeFilter(object):
             secrets = {}
         self.name = name
         self.secrets = secrets
+        self.parse_secrets()
         regex = re.escape(TAG_SECRET_START) + r'(\S+)' + \
-                re.escape(TAG_SECRET_END)
+            re.escape(TAG_SECRET_END)
         self.regex = re.compile(regex)
 
-    def __getstate__(self):
-        state = OrderedDict()
-        state['name'] = self.name
-        state['secrets'] = self.secrets
-        return state
-
-    def __setstate__(self, state):
-        self.name = state['name']
-        self.secrets = state['secrets']
+    def parse_secrets(self):
+        for key, secret_def in self.secrets.items():
+            self.secrets[key] = SmudgeSecret(key=key, **secret_def)
 
     def sub(self, line):
         out = u''
@@ -52,7 +45,7 @@ class SmudgeFilter(object):
             if key in self.secrets:
                 logger.debug("Replacing key '%s' with secret '%s'.",
                              key, self.secrets[key])
-                out += self.secrets[key]
+                out += self.secrets[key].secret
             else:
                 out += m.group(0)
                 logger.warning("No secret found for key '%s' in filter '%s'.",
@@ -66,50 +59,57 @@ class SmudgeFilter(object):
             return line
 
 
-def smudge_filter_representer(dumper, data):
-    return dumper.represent_mapping(u'!Filter', data.__getstate__().items(),
-                                    False)
+class SmudgeSecret(object):
+    # kwargs allows for additional keyword arguments passed
+    # through YAML dictionaries
+    def __init__(self, key, secret=None, description='', **kwargs):
+        self.key = key
+        self.secret = secret
+        self.description = description
 
 
-def smudge_filter_constructor(loader, node):
-    mapping = loader.construct_mapping(node)
-    return SmudgeFilter(**mapping)
-
-
-def load_secrets(name, filename):
-    if filename is None:
+def load_secrets(name, secret_file):
+    if secret_file is None:
         home_path = os.getenv('HOME', '')
         sec_path = os.getenv('DOTSECRETS_PATH',
                              os.path.join(home_path, SECRETS_PATH))
-        filename = os.path.join(sec_path, SECRETS_FILE)
-    if not is_only_user_readable(filename):
+        secret_file = os.path.join(sec_path, SECRETS_FILE)
+    if not is_only_user_readable(secret_file):
         logger.error("Insecure file permissions on secrets store '%s'.\n"
-                     "Ensure store is only read/writable by user.", filename)
+                     "Ensure store is only read/writable by user.",
+                     secret_file)
         return None
-    logger.debug("Opening secrets store '%s'.", filename)
-    with open(filename, 'r') as secrets_file:
-        for f in yaml.load_all(secrets_file):
-            if f.name == name:
-                return f
-    logger.warning("No filter named '%s' found in secrets, using copy filter.",
-                   name)
+    logger.debug("Opening secrets store '%s'.", secret_file)
+    try:
+        with open(secret_file, 'r', encoding='utf-8') as f:
+            secret_dict = yaml.safe_load(f)
+            try:
+                secret_def = secret_dict['filters'][name]
+            except KeyError:
+                logger.warning("No filter named '%s' found "
+                               "in secrets store '%s', "
+                               "using copy filter.", name, secret_file)
+                return CopyFilter()
+            # On success return the actual filter
+            return SmudgeFilter(name=name, secrets=secret_def['secrets'])
+    except UnicodeDecodeError:
+        logger.error("Unable to read secrets from store '%s': "
+                     "%s", secret_file, exc_info=True)
+    # On errors return default copy filter
     return CopyFilter()
 
 
 def smudge(args):
-    yaml.add_representer(SmudgeFilter, smudge_filter_representer)
-    yaml.add_constructor(u'!Filter', smudge_filter_constructor)
-
-    f = load_secrets(args.name, args.store)
-    if f is None:
+    smudge_filter = load_secrets(args.name, args.store)
+    if smudge_filter is None:
         logger.debug("Could not load any filter or secrets for '%s'.",
                      args.name)
         return
-    while 1:
+    while True:
         try:
             line = args.input.readline()
         except KeyboardInterrupt:
             break
         if not line:
             break
-        args.output.write(f.sub(line))
+        args.output.write(smudge_filter.sub(line))

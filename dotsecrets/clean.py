@@ -2,8 +2,6 @@ import re
 import logging
 import os
 
-from collections import OrderedDict
-
 import yaml
 
 from dotsecrets.textsub import Textsub
@@ -46,42 +44,26 @@ keyword_sub.compile()
 class CleanFilter(object):
     def __init__(self, name, rules=None):
         if rules is None:
-            rules = []
+            rules = {}
         self.name = name
         self.rules = rules
-        self.set_parent_rules()
+        self.parse_rules()
 
-    def __getstate__(self):
-        state = OrderedDict()
-        state['name'] = self.name
-        state['rules'] = self.rules
-        return state
-
-    def __setstate__(self, state):
-        self.name = state['name']
-        self.rules = state['rules']
-
-    def set_parent_rules(self):
-        for rule in self.rules:
-            rule.filter = self
+    def parse_rules(self):
+        for key, rule_def in self.rules.items():
+            self.rules[key] = CleanSecret(key=key, **rule_def)
 
     def sub(self, line):
-        for rule in self.rules:
+        for rule in self.rules.values():
             line = rule.sub(line)
         return line
 
 
-def clean_filter_representer(dumper, data):
-    return dumper.represent_mapping(u'!Filter', data.__getstate__().items(), False)
-
-
-def clean_filter_constructor(loader, node):
-    mapping = loader.construct_mapping(node)
-    return CleanFilter(**mapping)
-
-
 class CleanSecret(object):
-    def __init__(self, key, regex, substitute, description='', numbered=False):
+    # kwargs allows for additional keyword arguments passed
+    # through YAML dictionaries
+    def __init__(self, key, regex, substitute, description='', numbered=False,
+                 **kwargs):
         # Define property internals
         self._substitute = None
         self._regex = None
@@ -93,25 +75,6 @@ class CleanSecret(object):
         self.regex = regex
         self.substitute = substitute
         self.n = 0
-        self.filter = None
-
-    def __getstate__(self):
-        state = OrderedDict()
-        state['key'] = self.key
-        state['description'] = self.description
-        state['numbered'] = self.numbered
-        state['regex'] = self._orig_regex
-        state['substitute'] = self._substitute
-        return state
-
-    def __setstate__(self, state):
-        self.key = state['key']
-        self.description = state['description']
-        self.numbered = state['numbered']
-        self.regex = state['regex']
-        self.substitute = state['substitute']
-        self.n = 0
-        self.filter = None
 
     def get_regex(self):
         return self._regex
@@ -148,10 +111,7 @@ class CleanSecret(object):
     def get_substitute(self):
         key = ''
         if self.numbered:
-            try:
-                key += self.key + '_' + unicode(self.n)
-            except NameError:
-                key += self.key + '_' + str(self.n)
+            key += self.key + '_' + str(self.n)
         else:
             key += self.key
         return self._substitute.replace(TAG_SECRET_KEY,
@@ -163,46 +123,38 @@ class CleanSecret(object):
     substitute = property(get_substitute, set_substitute)
 
 
-def clean_secret_representer(dumper, data):
-    return dumper.represent_mapping(u'!Secret', data.__getstate__().items(), False)
-
-
-def clean_secret_constructor(loader, node):
-    mapping = loader.construct_mapping(node)
-    return CleanSecret(**mapping)
-
-
-def load_filter(name, filename):
-    if filename is None:
+def load_filter(name, filter_file):
+    if filter_file is None:
         home_path = os.getenv('HOME', '')
         conf_path = os.getenv('DOTFILES_PATH',
                               os.path.join(home_path, DOTFILES_PATH))
-        filename = os.path.join(conf_path, DOTFILTERS_FILE)
-    logger.debug("Opening file '%s'.", filename)
-    with open(filename, 'r') as filters_file:
-        for f in yaml.load_all(filters_file):
-            if f.name == name:
-                f.set_parent_rules()
-                return f
-    logger.warning("No filter named '%s' found, using copy filter.", name)
+        filter_file = os.path.join(conf_path, DOTFILTERS_FILE)
+    logger.debug("Opening file '%s'.", filter_file)
+    try:
+        with open(filter_file, 'r', encoding='utf-8') as f:
+            filter_dict = yaml.safe_load(f)
+            try:
+                filter_def = filter_dict['filters'][name]
+            except KeyError:
+                logger.warning("No filter named '%s' found in file '%s', "
+                               "using copy filter.", name, filter_file)
+                return CopyFilter()
+            # On success return the actual filter
+            return CleanFilter(name=name, rules=filter_def['rules'])
+    except UnicodeDecodeError:
+        logger.error("Unable to read filters from file '%s': "
+                     "%s", filter_file, exc_info=True)
+    # On errors return default copy filter
     return CopyFilter()
 
 
 def clean(args):
-    yaml.add_representer(CleanFilter, clean_filter_representer)
-    yaml.add_constructor(u'!Filter', clean_filter_constructor)
-    yaml.add_representer(CleanSecret, clean_secret_representer)
-    yaml.add_constructor(u'!Secret', clean_secret_constructor)
-
-    f = load_filter(args.name, args.filters)
-    if f is None:
-        logger.debug("Could not load any filter named '%s'.", args.name)
-        return
-    while 1:
+    clean_filter = load_filter(args.name, args.filters)
+    while True:
         try:
             line = args.input.readline()
         except KeyboardInterrupt:
             break
         if not line:
             break
-        args.output.write(f.sub(line))
+        args.output.write(clean_filter.sub(line))
