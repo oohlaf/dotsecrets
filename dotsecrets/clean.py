@@ -26,10 +26,18 @@ TAG_SECRET_END = '$'
 
 # Regex shortcuts
 keyword_dict = {
-    '(?#QuotedString)'       : r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\')',
-    '(?#QuotedOrSingleWord)' : r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\'|\S+)',
-    '(?#UpToHash)'           : r'([^\s#]+(?:[ \t\v\f]*[^\s#]+)+)',
-    '(?#UpToSemicolon)'      : r'([^\s;]+(?:[ \t\v\f]*[^\s;]+)+)',
+    # Match a quoted string
+    '(?#QuotedString)':
+        r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\')',
+    # Match an unquoted single word or a quoted string
+    '(?#QuotedOrSingleWord)':
+        r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\'|\S+)',
+    # Match whitespace up to hash symbol
+    '(?#WSUpToHash)':
+        r'([^\s#]+(?:[ \t\v\f]*[^\s#]+)+)',
+    # Match whitespace up to semicolon
+    '(?#WSUpToSemicolon)':
+        r'([^\s;]+(?:[ \t\v\f]*[^\s;]+)+)',
 }
 keyword_sub = Textsub(keyword_dict)
 keyword_sub.compile()
@@ -167,7 +175,7 @@ def clean_secret_constructor(loader, node):
 def load_filter(name, filename):
     if filename is None:
         home_path = os.getenv('HOME', '')
-        conf_path = os.getenv('DOTSECRETS_DOTFILES_PATH',
+        conf_path = os.getenv('DOTFILES_PATH',
                               os.path.join(home_path, DOTFILES_PATH))
         filename = os.path.join(conf_path, DOTFILTERS_FILE)
     logger.debug("Opening file '%s'.", filename)
