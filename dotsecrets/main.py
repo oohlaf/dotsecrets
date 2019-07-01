@@ -63,7 +63,10 @@ def main():
 
     args = parser.parse_args()
     configure_logging(args)
-    args.func(args)
+    try:
+        args.func(args)
+    except AttributeError:
+        parser.error("too few arguments")
 
 
 if __name__ == '__main__':
