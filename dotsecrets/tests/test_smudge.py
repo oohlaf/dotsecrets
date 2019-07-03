@@ -8,9 +8,14 @@ class TestSmudgeFilter(unittest.TestCase):
 
     def setUp(self):
         logging.basicConfig()
-        self.secrets = {}
-        self.secrets['password'] = 's3cr3t'
-        self.secrets['question'] = 'h1dd3n 4g3nd4'
+        self.secrets = {
+            'password': {
+                'secret': 's3cr3t'
+            },
+            'question': {
+                'secret': 'h1dd3n 4g3nd4'
+            }
+        }
         self.filters = []
         self.filters.append(SmudgeFilter('name', self.secrets))
 
@@ -43,6 +48,7 @@ class TestSmudgeFilter(unittest.TestCase):
                                              '# comment'),
                          'password = s3cr3t; security question = '
                          'h1dd3n 4g3nd4 # comment')
+
 
 if __name__ == '__main__':
     unittest.main()
