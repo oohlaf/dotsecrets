@@ -14,14 +14,18 @@ requires = [
 
 
 setup(name='dotsecrets',
-      version='0.0',
+      version='0.1',
       description='Manage dot files with secrets in Git',
       long_description=README + '\n\n' + CHANGES,
       license='BSD',
       classifiers=[
         "License :: OSI Approved :: BSD License",
+        "Development Status :: 3 - Alpha",
+        "Environment :: Console",
+        "Intended Audience :: End Users/Desktop",
+        "Topic :: System :: Shells",
         "Operating System :: POSIX",
-        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
         "Topic :: Software Development :: Version Control",
         "Topic :: System :: Systems Administration",
         "Topic :: Utilities"
