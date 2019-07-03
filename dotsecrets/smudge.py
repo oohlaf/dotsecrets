@@ -48,8 +48,8 @@ class SmudgeFilter(object):
                 out += self.secrets[key].secret
             else:
                 out += m.group(0)
-                logger.warning("No secret found for key '%s' in filter '%s'.",
-                               key, self.name)
+                logger.info("No secret found for key '%s' in filter '%s'.",
+                            key, self.name)
             prev_start = m.start()
             prev_end = m.end()
         if prev_end != -1:

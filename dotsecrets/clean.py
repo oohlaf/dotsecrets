@@ -136,8 +136,8 @@ def load_filter(name, filter_file):
             try:
                 filter_def = filter_dict['filters'][name]
             except KeyError:
-                logger.warning("No filter named '%s' found in file '%s', "
-                               "using copy filter.", name, filter_file)
+                logger.info("No filter named '%s' found in file '%s', "
+                            "using copy filter.", name, filter_file)
                 return CopyFilter()
             # On success return the actual filter
             return CleanFilter(name=name, rules=filter_def['rules'])
