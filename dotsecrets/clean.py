@@ -2,12 +2,13 @@ import re
 import logging
 import os
 
-import yaml
+from ruamel.yaml import YAML
 
 from dotsecrets.textsub import Textsub
 from dotsecrets.utils import CopyFilter
 
 
+yaml = YAML(typ='safe')
 logger = logging.getLogger(__name__)
 
 
@@ -132,7 +133,7 @@ def load_filter(name, filter_file):
     logger.debug("Opening file '%s'.", filter_file)
     try:
         with open(filter_file, 'r', encoding='utf-8') as f:
-            filter_dict = yaml.safe_load(f)
+            filter_dict = yaml.load(f)
             try:
                 filter_def = filter_dict['filters'][name]
             except KeyError:

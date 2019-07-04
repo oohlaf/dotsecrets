@@ -2,12 +2,13 @@ import re
 import logging
 import os
 
-import yaml
+from ruamel.yaml import YAML
 
 from dotsecrets.clean import TAG_SECRET_START, TAG_SECRET_END
 from dotsecrets.utils import CopyFilter, is_only_user_readable
 
 
+yaml = YAML(typ='safe')
 logger = logging.getLogger(__name__)
 
 
@@ -82,7 +83,7 @@ def load_secrets(name, secret_file):
     logger.debug("Opening secrets store '%s'.", secret_file)
     try:
         with open(secret_file, 'r', encoding='utf-8') as f:
-            secret_dict = yaml.safe_load(f)
+            secret_dict = yaml.load(f)
             try:
                 secret_def = secret_dict['filters'][name]
             except KeyError:
