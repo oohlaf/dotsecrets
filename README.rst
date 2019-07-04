@@ -27,9 +27,14 @@ Installation
 
 Run::
 
-    $ pip install .
+    $ pip3 install .
 
 You should then have a ``dotsecrets`` script available in a new shell.
+
+You might need to symlink it into your ``~/bin`` folder::
+
+    $ ln -s ~/.local/bin/dotsecrets ~/bin
+
 
 
 Usage
@@ -51,39 +56,47 @@ Its syntax is as follows:
 
 .. code-block:: yaml
 
-    !Filter
-    name: mutt
-    rules:
-    - !Secret
-      key: passwd
-      description: Mutt passwords
-      numbered: true
-      regex: password(\s*)=(\s*)(?#UpToHash)
-      substitute: password\1=\2(?#Key)
-    --!Filter
-    name: irssi
-    rules:
-    - !Secret
-      key: nickname
-      description: IRC nickname
-      numbered: false
-      regex: nick(\s*)\w+
-      substitute: nick\1(?#Key)
+    version: 2
+    filters:
+      "mutt/.mutt/muttrc":
+        rules:
+          passwd:
+            description: Mutt passwords
+            numbered: true
+            regex: password(\s*)=(\s*)(?#WSUpToHash)
+            substitute: password\1=\2(?#Key)
+      "irssi/.irssi/config":
+        rules:
+          nickname:
+            description: IRC nickname
+            regex: nick(\s*)=(\s*)(?#QuotedString);
+            substitute: nick\1=\2"(?#Key)";
+          realname:
+            regex: real_name(\s*)=(\s*)(?#QuotedString);
+            substitute: real_name\1=\2"(?#Key)";
 
-This file contains filters per type of filter. The first example defines
-a filter for replacing passwords in mutt configuration files. Each line
+This file contains filter rules for each file that contains secrets. The
+first example defines a filter for replacing passwords in mutt configuration
+files. A secret is detected by a regular expression matching on each line
 containing the word ``password`` followed by an equal sign and each character
 (except whitespace) up to an optional hash ``#`` comment.
 
 A match is replaced by the following: ``password = $DotSecrets: password_1$``.
 The key is appended with the number of matches because ``numbered`` is defined
 as ``true``. This allows for multiple matches and substitutions as long as the
-ordering is retained.
+ordering in the file is retained.
 
 The second example shows a filter for hiding your nickname in an Irssi
-configuration file. The regular expression matches any line containg the word
-nick followed by whitespace and one or more alphanumeric characters. A match
-is replaced by ``nick $DotSecrets: nickname$``.
+configuration file. The regular expression matches any line containing the
+word nick followed by whitespace and one or more alphanumeric characters. A
+match is replaced by ``nick = "$DotSecrets: nickname$";``.
+
+Similar for the filter to hide your real name in the same file. The regular
+expression matches any line containing ``real_name`` followed by an equal
+sign, quoted text and a final semi-colon. A match is replaced by
+``real_name = "$DotSecrets: realname$";``.
+
+Please note that the description and number fields are optional.
 
 The regular expressions and substitutions follow the Python regular expression
 syntax [5]_. Substitutions can reference regex groups ``(...)`` using
@@ -99,8 +112,8 @@ Shortcut                Description
                         the string
 (?#QuotedOrSingleWord)  Same as QuotedString or an unquoted single word of
                         non-whitespace characters
-(?#UpToHash)            Matches whitespace up to the hash symbol ``#``
-(?#UpToSemicolon)       Matches whitespace up to the semi colon symbol ``;``
+(?#WSUpToHash)          Matches whitespace up to the hash symbol ``#``
+(?#WSUpToSemicolon)     Matches whitespace up to the semi colon symbol ``;``
 (?#Key)                 Used to substitute the secret
 ======================  ====================================================
 
@@ -109,27 +122,34 @@ Secrets
 -------
 
 Secret information, like passwords, answers to security questions, and other
-sensitive information is stored in a file called ``dotsecrets.yaml`` inside the
-XDG configuration directory (typically ``~/.config/dotsecrets/dotsecrets.yaml``).
+sensitive information is stored in a file called ``dotsecrets.yaml`` inside
+the XDG configuration directory (typically
+``~/.config/dotsecrets/dotsecrets.yaml``).
 
 Its syntax is as follows:
 
 .. code-block:: yaml
 
-    !Filter
-    name: mutt
-    secrets:
-      password_1: s3cr3t
-      question: h1dd3n 4g3nd4
-    --!Filter
-    name: irssi
-    secrets:
-      nick: myname
-      password: mypass
+    version: 2
+    filters:
+      "mutt/.mutt/muttrc":
+        secrets:
+          password_1:
+            description: Password for GMail
+            secret: s3cr3t
+          password_2:
+            description: Password for Hotmail
+            secret: f00bar
+      "irssi/.irssi/config":
+        secrets:
+          nick:
+            secret: mynick
+          realname:
+            secret: My Real Name
 
-This configuration file contains two filters named mutt and irssi. Each
+This configuration file contains two filters for mutt and irssi. Each
 filter contains one or more secrets. These secrets are used to filter the
-files in the Git repository.
+files in the Git repository for sensitive data.
 
 
 Linking filters and secrets
@@ -140,8 +160,7 @@ defined in git config files.
 
 Contents of ``.gitattributes``::
 
-    muttrc filter=mutt
-    irssi/* filter=irssi
+    * filter=dotsecrets
 
 When checking in files with Git, the clean command is run for those files that
 match the pattern given in ``.gitattributes``. When checking out files that
@@ -149,26 +168,17 @@ have a filter defined, the smudge command substitutes the secrets again.
 
 To add these filters run the following commands::
 
-    git config filter.mutt.clean "dotsecrets clean mutt"
-    git config filter.mutt.smudge "dotsecrets smudge mutt"
-    git config filter.mutt.required true
+    git config filter.dotsecrets.clean "dotsecrets clean %f"
+    git config filter.dotsecrets.smudge "dotsecrets smudge %f"
+    git config filter.dotsecrets.required true
 
-    git config filter.irssi.clean "dotsecrets clean irssi"
-    git config filter.irssi.smudge "dotsecrets smudge irssi"
-    git config filter.irssi.required true
-
-They result in the following addition to your ``.gitconfig`` file:
+They result in the following addition to your ``.git/config`` file:
 
 .. code-block:: ini
 
-    [filter "mutt"]
-        clean = dotsecrets clean mutt
-        smudge = dotsecrets smudge mutt
-        required = true
-
-    [filter "irssi"]
-        clean = dotsecrets clean irssi
-        smudge = dotsecrets smudge irssi
+    [filter "dotsecrets"]
+        clean = dotsecrets clean %f
+        smudge = dotsecrets smudge %f
         required = true
 
 
@@ -179,4 +189,4 @@ References
 .. [2] https://github.com/jim/briefcase
 .. [3] https://git-scm.com/docs/gitattributes
 .. [4] https://pypi.python.org/pypi/PyYAML
-.. [5] https://docs.python.org/2/library/re.html#regular-expression-syntax
+.. [5] https://docs.python.org/3/library/re.html#regular-expression-syntax

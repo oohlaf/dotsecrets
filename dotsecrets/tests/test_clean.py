@@ -11,7 +11,7 @@ class TestCleanSecret(unittest.TestCase):
         self.secrets = []
         self.secrets.append(CleanSecret('passwd',
                                         r'password(\s*)=(\s*)'
-                                        r'(?#UpToHash)',
+                                        r'(?#WSUpToHash)',
                                         r'password\1=\2(?#Key)',
                                         'Mutt passwords',
                                         True))
@@ -27,13 +27,6 @@ class TestCleanSecret(unittest.TestCase):
                                         r'password\1=\2(?#Key)',
                                         'Mutt passwords',
                                         True))
-
-    def test_state(self):
-        """Test getting and setting state"""
-        state = self.secrets[0].__getstate__()
-        other_secret = CleanSecret('', '', '')
-        other_secret.__setstate__(state)
-        self.assertEqual(self.secrets[0].__dict__, other_secret.__dict__)
 
     def test_regex_sub(self):
         """Test regex substitution with predefined short cuts"""
