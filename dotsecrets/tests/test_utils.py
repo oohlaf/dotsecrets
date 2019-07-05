@@ -8,8 +8,8 @@ class TestUtils(unittest.TestCase):
     def test_copyfilter(self):
         """Test copy filter"""
         t = CopyFilter()
-        l = "This is a line"
-        return self.assertEqual(l, t.sub(l))
+        line = "This is a line"
+        return self.assertEqual(line, t.sub(line))
 
 
 if __name__ == '__main__':

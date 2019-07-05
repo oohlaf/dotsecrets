@@ -19,7 +19,7 @@ git attributes manual [3]_ in section Effects under filter attribute.
 Dependencies
 ------------
 
-DotSecrets depends on PyYAML [4]_ for reading configuration files.
+DotSecrets depends on ruamel.yaml [4]_ for reading configuration files.
 
 
 Installation
@@ -188,5 +188,5 @@ References
 .. [1] https://github.com/oohlaf/dotsecrets
 .. [2] https://github.com/jim/briefcase
 .. [3] https://git-scm.com/docs/gitattributes
-.. [4] https://pypi.python.org/pypi/PyYAML
+.. [4] https://pypi.org/project/ruamel.yaml
 .. [5] https://docs.python.org/3/library/re.html#regular-expression-syntax

@@ -9,7 +9,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.rst')).read()
 
 
 requires = [
-    'pyyaml',
+    'ruamel.yaml',
     ]
 
 

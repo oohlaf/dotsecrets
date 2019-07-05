@@ -65,8 +65,14 @@ def main():
     configure_logging(args)
     try:
         args.func(args)
-    except AttributeError:
-        parser.error("too few arguments")
+    except AttributeError as exc:
+        try:
+            if exc.args[0] == "'Namespace' object has no attribute 'func'":
+                parser.error("too few arguments")
+        except Exception:
+            pass
+        else:
+            logger.exception("AttributeError")
 
 
 if __name__ == '__main__':
