@@ -116,7 +116,9 @@ class CleanSecret(object):
         else:
             key += self.key
         return self._substitute.replace(TAG_SECRET_KEY,
-                                        TAG_SECRET_START + key + TAG_SECRET_END)
+                                        TAG_SECRET_START +
+                                        key +
+                                        TAG_SECRET_END)
 
     def set_substitute(self, substitute):
         self._substitute = substitute
