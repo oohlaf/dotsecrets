@@ -149,7 +149,8 @@ Its syntax is as follows:
 
 This configuration file contains two filters for mutt and irssi. Each
 filter contains one or more secrets. These secrets are used to filter the
-files in the Git repository for sensitive data.
+files in the Git repository for sensitive data. Each secret has an optional
+description field.
 
 
 Linking filters and secrets
