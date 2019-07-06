@@ -4,8 +4,8 @@ import logging
 from ruamel.yaml import YAML
 
 from dotsecrets.params import TAG_SECRET_START, TAG_SECRET_END
-from dotsecrets.utils import CopyFilter, get_dotsecrets_file
-
+from dotsecrets.utils import get_dotsecrets_file
+from dotsecrets.textsub import CopyFilter
 
 yaml = YAML(typ='safe')
 logger = logging.getLogger(__name__)

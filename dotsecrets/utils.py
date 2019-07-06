@@ -15,11 +15,6 @@ from dotsecrets.params import (DOTFILES_PATH,
 logger = logging.getLogger(__name__)
 
 
-class CopyFilter(object):
-    def sub(self, line):
-        return line
-
-
 def get_dotfiles_path():
     env_dotfiles = os.getenv('DOTFILES_PATH', DOTFILES_PATH)
     files_path = Path(env_dotfiles)

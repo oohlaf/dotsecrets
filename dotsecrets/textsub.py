@@ -31,3 +31,8 @@ class Textsub(UserDict):
         if len(self.data) == 0:
             return s
         return self.regex.sub(self, s)
+
+
+class CopyFilter(object):
+    def sub(self, line):
+        return line
