@@ -56,6 +56,6 @@ def get_dotsecrets_file():
     if mode == 0o600:
         return secrets_file
     else:
-        msg = "Bad file ownership, " \
-              "please make file readable for user only (0600)"
+        msg = "Bad file ownership (%s), " \
+              "please make file readable for user only (0o600)" % oct(mode)
         raise PermissionError(errno.EACCES, msg, str(secrets_file))

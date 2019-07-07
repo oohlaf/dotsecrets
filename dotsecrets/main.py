@@ -73,7 +73,7 @@ def main():
             pass
         else:
             logger.exception(exc, exc_info=logger.isEnabledFor(logging.DEBUG))
-    except IOError as exc:
+    except Exception as exc:
         logger.exception(exc, exc_info=logger.isEnabledFor(logging.DEBUG))
 
 
