@@ -77,7 +77,7 @@ class CleanSecret(object):
     regex = property(get_regex, set_regex)
 
     def sub(self, line):
-        out = u''
+        out = ''
         prev_start = -1
         prev_end = -1
         for m in self.regex.finditer(line):

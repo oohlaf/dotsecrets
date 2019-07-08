@@ -15,11 +15,16 @@ uses a different file hierarchy and naming convention.
 For more information on the filtering capabilities of Git, see the
 git attributes manual [3]_ in section Effects under filter attribute.
 
+Symbolic linking and unlinking is supported by organizing your dotfiles in
+modules (specific topic names as top level directory within your repository).
+The stow and unstow commands automate linking and unlinking them.
+
 
 Dependencies
 ------------
 
-DotSecrets depends on ruamel.yaml [4]_ for reading configuration files.
+DotSecrets depends on ruamel.yaml [4]_ for reading configuration files and
+dploy [5]_ for stow functionality.
 
 
 Installation
@@ -99,7 +104,7 @@ sign, quoted text and a final semi-colon. A match is replaced by
 Please note that the description and number fields are optional.
 
 The regular expressions and substitutions follow the Python regular expression
-syntax [5]_. Substitutions can reference regex groups ``(...)`` using
+syntax [6]_. Substitutions can reference regex groups ``(...)`` using
 ``\number`` syntax. To make it easier to define complex regular expressions,
 the following hortcuts are available. They are defined as regex comments
 ``(?#...)``:
@@ -169,9 +174,9 @@ have a filter defined, the smudge command substitutes the secrets again.
 
 To add these filters run the following commands::
 
-    git config filter.dotsecrets.clean "dotsecrets clean %f"
-    git config filter.dotsecrets.smudge "dotsecrets smudge %f"
-    git config filter.dotsecrets.required true
+    $ git config filter.dotsecrets.clean "dotsecrets clean %f"
+    $ git config filter.dotsecrets.smudge "dotsecrets smudge %f"
+    $ git config filter.dotsecrets.required true
 
 They result in the following addition to your ``.git/config`` file:
 
@@ -183,6 +188,38 @@ They result in the following addition to your ``.git/config`` file:
         required = true
 
 
+Stow and Unstow
+---------------
+
+Using the stow command each module is linked into your home directory. The
+unstow command will unlink them. The modules to act upon are specified
+on the command line. To act on all modules pass the ``--all`` argument.
+Add ``--dry-run`` to simulate which actions will be taken without doing
+them.
+
+To stow and unstow the current working directory must be set inside the
+dotfilters repository.
+
+Example::
+
+    $ dotfilters stow mutt irssi
+
+This will stow both modules.
+
+Use the following::
+
+    $ dotfilters stow --dry-run mutt
+    dploy stow: link /home/user/.mutt => dotfiles/mutt/.mutt
+
+to simulate the actions for linking mutt. The output is a list of actions
+needed to stow the module.
+
+To remove the symbolic links from your home directory, run::
+
+    $ dotfilters unstow --dry-run mutt
+    dploy stow: unlink /home/user/.mutt => dotfiles/mutt/.mutt
+
+
 References
 ==========
 
@@ -190,4 +227,5 @@ References
 .. [2] https://github.com/jim/briefcase
 .. [3] https://git-scm.com/docs/gitattributes
 .. [4] https://pypi.org/project/ruamel.yaml
-.. [5] https://docs.python.org/3/library/re.html#regular-expression-syntax
+.. [5] https://pypi.org/project/dploy/
+.. [6] https://docs.python.org/3/library/re.html#regular-expression-syntax
