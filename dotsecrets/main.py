@@ -6,6 +6,7 @@ import sys
 
 from dotsecrets.clean import clean
 from dotsecrets.smudge import smudge
+from dotsecrets.stow import stow, unstow
 
 
 logger = logging.getLogger()
@@ -61,6 +62,22 @@ def main():
     parser_smudge.add_argument('name')
     parser_smudge.set_defaults(func=smudge)
 
+    dploy_parser = argparse.ArgumentParser(add_help=False)
+    dploy_parser.add_argument('--all', dest='source_all',
+                              action='store_true',
+                              help='act on all top level directories')
+    dploy_parser.add_argument('--dry-run', dest='is_dry_run',
+                              action='store_true',
+                              help='simulate actions')
+    dploy_parser.add_argument('source', nargs='*',
+                              help="source directory to act upon")
+
+    parser_stow = subparsers.add_parser('stow', parents=[dploy_parser])
+    parser_stow.set_defaults(func=stow)
+
+    parser_unstow = subparsers.add_parser('unstow', parents=[dploy_parser])
+    parser_unstow.set_defaults(func=unstow)
+
     args = parser.parse_args()
     configure_logging(args)
     try:
@@ -69,10 +86,12 @@ def main():
         try:
             if exc.args[0] == "'Namespace' object has no attribute 'func'":
                 parser.error("too few arguments")
-        except Exception:
+        except (KeyError, AttributeError):
             pass
         else:
-            logger.exception("AttributeError")
+            logger.exception(exc, exc_info=logger.isEnabledFor(logging.DEBUG))
+    except Exception as exc:
+        logger.exception(exc, exc_info=logger.isEnabledFor(logging.DEBUG))
 
 
 if __name__ == '__main__':

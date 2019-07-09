@@ -1,20 +1,14 @@
 import re
 import logging
-import os
 
 from ruamel.yaml import YAML
 
-from dotsecrets.clean import TAG_SECRET_START, TAG_SECRET_END
-from dotsecrets.utils import CopyFilter, is_only_user_readable
-
+from dotsecrets.params import TAG_SECRET_START, TAG_SECRET_END
+from dotsecrets.utils import get_dotsecrets_file
+from dotsecrets.textsub import CopyFilter
 
 yaml = YAML(typ='safe')
 logger = logging.getLogger(__name__)
-
-
-# Location of default secrets store
-SECRETS_FILE = 'dotsecrets.yaml'
-SECRETS_PATH = os.path.join('.config', 'dotsecrets')
 
 
 class SmudgeFilter(object):
@@ -71,41 +65,25 @@ class SmudgeSecret(object):
 
 def load_secrets(name, secret_file):
     if secret_file is None:
-        home_path = os.getenv('HOME', '')
-        sec_path = os.getenv('DOTSECRETS_PATH',
-                             os.path.join(home_path, SECRETS_PATH))
-        secret_file = os.path.join(sec_path, SECRETS_FILE)
-    if not is_only_user_readable(secret_file):
-        logger.error("Insecure file permissions on secrets store '%s'.\n"
-                     "Ensure store is only read/writable by user.",
-                     secret_file)
-        return None
+        secret_file = get_dotsecrets_file()
     logger.debug("Opening secrets store '%s'.", secret_file)
-    try:
-        with open(secret_file, 'r', encoding='utf-8') as f:
-            secret_dict = yaml.load(f)
-            try:
-                secret_def = secret_dict['filters'][name]
-            except KeyError:
-                logger.warning("No filter named '%s' found "
-                               "in secrets store '%s', "
-                               "using copy filter.", name, secret_file)
-                return CopyFilter()
-            # On success return the actual filter
-            return SmudgeFilter(name=name, secrets=secret_def['secrets'])
-    except UnicodeDecodeError:
-        logger.error("Unable to read secrets from store '%s': "
-                     "%s", secret_file, exc_info=True)
-    # On errors return default copy filter
+    with open(secret_file, 'r', encoding='utf-8') as f:
+        secret_dict = yaml.load(f)
+        try:
+            secret_def = secret_dict['filters'][name]
+        except KeyError:
+            logger.warning("No filter named '%s' found "
+                           "in secrets store '%s', "
+                           "using copy filter.", name, secret_file)
+            return CopyFilter()
+        # On success return the actual filter
+        return SmudgeFilter(name=name, secrets=secret_def['secrets'])
+    # Fail safe return default copy filter
     return CopyFilter()
 
 
 def smudge(args):
     smudge_filter = load_secrets(args.name, args.store)
-    if smudge_filter is None:
-        logger.debug("Could not load any filter or secrets for '%s'.",
-                     args.name)
-        return
     while True:
         try:
             line = args.input.readline()

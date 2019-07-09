@@ -1,6 +1,6 @@
 import unittest
 
-from dotsecrets.utils import CopyFilter
+from dotsecrets.textsub import CopyFilter
 
 
 class TestUtils(unittest.TestCase):

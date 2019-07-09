@@ -8,6 +8,7 @@ Changes
 - Breaking change in YAML file config format
 - Breaking change in git filter config (one config to rule all secrets)
 - Changed YAML parser to ruamel.yaml
+- Added stow and unstow command to manage linking of dotfiles
 
 0.0 (unreleased)
 ----------------

@@ -1,27 +1,16 @@
 import re
 import logging
-import os
 
 from ruamel.yaml import YAML
 
-from dotsecrets.textsub import Textsub
-from dotsecrets.utils import CopyFilter
+from dotsecrets.params import TAG_SECRET_START, TAG_SECRET_END, TAG_SECRET_KEY
+from dotsecrets.textsub import Textsub, CopyFilter
+from dotsecrets.utils import get_dotfilters_file
 
 
 yaml = YAML(typ='safe')
 logger = logging.getLogger(__name__)
 
-
-# Configuration file for filters
-DOTFILTERS_FILE = '.dotfilters.yaml'
-DOTFILES_PATH = 'dotfiles'
-
-# Tag used in regex substitution for secret keys
-TAG_SECRET_KEY = '(?#Key)'
-
-# Used to tag secrets in dot files
-TAG_SECRET_START = '$DotSecrets: '
-TAG_SECRET_END = '$'
 
 # Regex shortcuts
 keyword_dict = {
@@ -88,7 +77,7 @@ class CleanSecret(object):
     regex = property(get_regex, set_regex)
 
     def sub(self, line):
-        out = u''
+        out = ''
         prev_start = -1
         prev_end = -1
         for m in self.regex.finditer(line):
@@ -128,26 +117,19 @@ class CleanSecret(object):
 
 def load_filter(name, filter_file):
     if filter_file is None:
-        home_path = os.getenv('HOME', '')
-        conf_path = os.getenv('DOTFILES_PATH',
-                              os.path.join(home_path, DOTFILES_PATH))
-        filter_file = os.path.join(conf_path, DOTFILTERS_FILE)
+        filter_file = get_dotfilters_file()
     logger.debug("Opening file '%s'.", filter_file)
-    try:
-        with open(filter_file, 'r', encoding='utf-8') as f:
-            filter_dict = yaml.load(f)
-            try:
-                filter_def = filter_dict['filters'][name]
-            except KeyError:
-                logger.info("No filter named '%s' found in file '%s', "
-                            "using copy filter.", name, filter_file)
-                return CopyFilter()
-            # On success return the actual filter
-            return CleanFilter(name=name, rules=filter_def['rules'])
-    except UnicodeDecodeError:
-        logger.error("Unable to read filters from file '%s': "
-                     "%s", filter_file, exc_info=True)
-    # On errors return default copy filter
+    with open(filter_file, 'r', encoding='utf-8') as f:
+        filter_dict = yaml.load(f)
+        try:
+            filter_def = filter_dict['filters'][name]
+        except KeyError:
+            logger.info("No filter named '%s' found in file '%s', "
+                        "using copy filter.", name, filter_file)
+            return CopyFilter()
+        # On success return the actual filter
+        return CleanFilter(name=name, rules=filter_def['rules'])
+    # Fail safe return default copy filter
     return CopyFilter()
 
 
