@@ -3,7 +3,7 @@ import logging
 from dploy import stowcmd
 from pathlib import Path
 
-from dotsecrets.utils import get_dotfiles_path
+from dotsecrets.utils import get_dotfiles_path, is_sub_path
 
 
 logger = logging.getLogger(__name__)
@@ -13,8 +13,7 @@ def check_args_source(args, dotfiles_path):
     sources = []
     if args.source_all:
         cwd_path = Path.cwd()
-        if ((dotfiles_path == cwd_path) or
-                (dotfiles_path in cwd_path.parents)):
+        if is_sub_path(cwd_path, dotfiles_path):
             args_sources = []
         else:
             logger.error("Current working directory '%s' not inside "
