@@ -37,7 +37,7 @@ def check_args_source(args, dotfiles_path):
 
 
 def stow(args):
-    dotfiles_path = get_dotfiles_path().resolve()
+    dotfiles_path = get_dotfiles_path().resolve(strict=True)
     dest_path = Path.home()
     sources = check_args_source(args, dotfiles_path)
     if not sources:
@@ -52,7 +52,7 @@ def stow(args):
 
 
 def unstow(args):
-    dotfiles_path = get_dotfiles_path().resolve()
+    dotfiles_path = get_dotfiles_path().resolve(strict=True)
     dest_path = Path.home()
     sources = check_args_source(args, dotfiles_path)
     if not sources:
