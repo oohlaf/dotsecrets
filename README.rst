@@ -188,6 +188,21 @@ They result in the following addition to your ``.git/config`` file:
         required = true
 
 
+Initialize Repository
+---------------------
+
+Upon a fresh checkout of the dotfiles repository, the git filter
+configuration is not yet in place. The ``init`` command is available to
+initialize the configuration (when needed) and do the initial smudge on
+files listed as having secrets defined.
+
+Example::
+
+    $ git clone git@github.com:username/dotfiles.git
+    $ cd dotfiles
+    $ dotsecrets init
+
+
 Stow and Unstow
 ---------------
 
@@ -202,21 +217,20 @@ dotfilters repository.
 
 Example::
 
-    $ dotfilters stow mutt irssi
+    $ dotsecrets stow mutt irssi
 
 This will stow both modules.
 
-Use the following::
+Use the following to simulate the actions for linking mutt. The output
+is a list of actions needed to stow the module::
 
-    $ dotfilters stow --dry-run mutt
+    $ dotsecrets stow --dry-run mutt
     dploy stow: link /home/user/.mutt => dotfiles/mutt/.mutt
 
-to simulate the actions for linking mutt. The output is a list of actions
-needed to stow the module.
 
 To remove the symbolic links from your home directory, run::
 
-    $ dotfilters unstow --dry-run mutt
+    $ dotsecrets unstow --dry-run mutt
     dploy stow: unlink /home/user/.mutt => dotfiles/mutt/.mutt
 
 
