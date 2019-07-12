@@ -63,32 +63,39 @@ class SmudgeSecret(object):
         self.description = description
 
 
-def load_secrets(name, secret_file):
-    if secret_file is None:
-        secret_file = get_dotsecrets_file()
-    logger.debug("Opening secrets store '%s'.", secret_file)
-    with open(secret_file, 'r', encoding='utf-8') as f:
-        secret_dict = yaml.load(f)
-        try:
-            secret_def = secret_dict['filters'][name]
-        except KeyError:
-            logger.warning("No filter named '%s' found "
-                           "in secrets store '%s', "
-                           "using copy filter.", name, secret_file)
-            return CopyFilter()
-        # On success return the actual filter
-        return SmudgeFilter(name=name, secrets=secret_def['secrets'])
-    # Fail safe return default copy filter
-    return CopyFilter()
+def load_all_secrets(secrets_file=None):
+    if secrets_file is None:
+        secrets_file = get_dotsecrets_file()
+    logger.debug("Opening secrets store '%s'.", secrets_file)
+    with open(secrets_file, 'r', encoding='utf-8') as f:
+        secrets_dict = yaml.load(f)
+    logger.debug("Closed secrets store '%s'.", secrets_file)
+    return secrets_dict, secrets_file
 
 
-def smudge(args):
-    smudge_filter = load_secrets(args.name, args.store)
+def get_smudge_filter(name, secrets_file=None, secrets_dict=None):
+    if secrets_dict is None:
+        secrets_dict, secrets_file = load_all_secrets(secrets_file)
+    try:
+        secrets_def = secrets_dict['filters'][name]
+    except KeyError:
+        logger.warning("No filter named '%s' found in secrets store '%s', "
+                       "using copy filter.", name, secrets_file)
+        return CopyFilter()
+    return SmudgeFilter(name=name, secrets=secrets_def['secrets'])
+
+
+def smudge_stream(input_stream, output_stream, smudge_filter):
     while True:
         try:
-            line = args.input.readline()
+            line = input_stream.readline()
         except KeyboardInterrupt:
             break
         if not line:
             break
-        args.output.write(smudge_filter.sub(line))
+        output_stream.write(smudge_filter.sub(line))
+
+
+def smudge(args):
+    smudge_filter = get_smudge_filter(args.name, args.store)
+    smudge_stream(args.input, args.output, smudge_filter)

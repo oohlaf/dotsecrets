@@ -5,7 +5,6 @@ import stat
 
 from pathlib import Path
 
-# from dotsecrets.exceptions import DotFilesPathNotFound
 from dotsecrets.params import (DOTFILES_PATH,
                                DOTFILTERS_FILE,
                                DOTSECRETS_XDG_NAME,
@@ -59,3 +58,7 @@ def get_dotsecrets_file():
         msg = "Bad file ownership (%s), " \
               "please make file readable for user only (0o600)" % oct(mode)
         raise PermissionError(errno.EACCES, msg, str(secrets_file))
+
+
+def is_sub_path(child_path, parent_path):
+    return (parent_path == child_path) or (parent_path in child_path.parents)

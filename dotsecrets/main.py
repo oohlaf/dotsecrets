@@ -5,6 +5,7 @@ import logging
 import sys
 
 from dotsecrets.clean import clean
+from dotsecrets.init import init
 from dotsecrets.smudge import smudge
 from dotsecrets.stow import stow, unstow
 
@@ -77,6 +78,13 @@ def main():
 
     parser_unstow = subparsers.add_parser('unstow', parents=[dploy_parser])
     parser_unstow.set_defaults(func=unstow)
+
+    parser_init = subparsers.add_parser('init')
+    parser_init.add_argument('--filters', metavar='FILE',
+                             help='load filters from FILE')
+    parser_init.add_argument('--store', metavar='FILE',
+                             help='load secrets from FILE')
+    parser_init.set_defaults(func=init)
 
     args = parser.parse_args()
     configure_logging(args)

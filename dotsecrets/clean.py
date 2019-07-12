@@ -115,31 +115,39 @@ class CleanSecret(object):
     substitute = property(get_substitute, set_substitute)
 
 
-def load_filter(name, filter_file):
-    if filter_file is None:
-        filter_file = get_dotfilters_file()
-    logger.debug("Opening file '%s'.", filter_file)
-    with open(filter_file, 'r', encoding='utf-8') as f:
-        filter_dict = yaml.load(f)
-        try:
-            filter_def = filter_dict['filters'][name]
-        except KeyError:
-            logger.info("No filter named '%s' found in file '%s', "
-                        "using copy filter.", name, filter_file)
-            return CopyFilter()
-        # On success return the actual filter
-        return CleanFilter(name=name, rules=filter_def['rules'])
-    # Fail safe return default copy filter
-    return CopyFilter()
+def load_all_filters(filters_file=None):
+    if filters_file is None:
+        filters_file = get_dotfilters_file()
+    logger.debug("Opening filters file '%s'.", filters_file)
+    with open(filters_file, 'r', encoding='utf-8') as f:
+        filters_dict = yaml.load(f)
+    logger.debug("Closed filters file '%s'.", filters_file)
+    return filters_dict, filters_file
 
 
-def clean(args):
-    clean_filter = load_filter(args.name, args.filters)
+def get_clean_filter(name, filters_file=None, filters_dict=None):
+    if filters_dict is None:
+        filters_dict, filters_file = load_all_filters(filters_file)
+    try:
+        filters_def = filters_dict['filters'][name]
+    except KeyError:
+        logger.info("No filter named '%s' found in file '%s', "
+                    "using copy filter.", name, filters_file)
+        return CopyFilter()
+    return CleanFilter(name=name, rules=filters_def['rules'])
+
+
+def clean_stream(input_stream, output_stream, clean_filter):
     while True:
         try:
-            line = args.input.readline()
+            line = input_stream.readline()
         except KeyboardInterrupt:
             break
         if not line:
             break
-        args.output.write(clean_filter.sub(line))
+        output_stream.write(clean_filter.sub(line))
+
+
+def clean(args):
+    clean_filter = get_clean_filter(args.name, args.filters)
+    clean_stream(args.input, args.output, clean_filter)
