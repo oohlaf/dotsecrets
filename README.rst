@@ -191,10 +191,10 @@ They result in the following addition to your ``.git/config`` file:
 Initialize Repository
 ---------------------
 
-Upon a fresh checkout of the dotfiles repository, the git filter
-configuration is not yet in place. The ``init`` command is available to
-initialize the configuration (when needed) and do the initial smudge on
-files listed as having secrets defined.
+Upon a fresh checkout of the dotfiles repository, the git filter and git
+attributes configuration is not yet in place. The ``init`` command is
+available to initialize the configuration (when needed) and do the initial
+smudge on files listed as having secrets.
 
 Example::
 
