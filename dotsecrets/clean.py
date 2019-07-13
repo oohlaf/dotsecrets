@@ -3,7 +3,10 @@ import logging
 
 from ruamel.yaml import YAML
 
-from dotsecrets.params import TAG_SECRET_START, TAG_SECRET_END, TAG_SECRET_KEY
+from dotsecrets.params import (TAG_SECRET_START,
+                               TAG_SECRET_END,
+                               TAG_SECRET_KEY,
+                               DOTFILTERS_KEYWORD_DICT)
 from dotsecrets.textsub import Textsub, CopyFilter
 from dotsecrets.utils import get_dotfilters_file
 
@@ -12,22 +15,7 @@ yaml = YAML(typ='safe')
 logger = logging.getLogger(__name__)
 
 
-# Regex shortcuts
-keyword_dict = {
-    # Match a quoted string
-    '(?#QuotedString)':
-        r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\')',
-    # Match an unquoted single word or a quoted string
-    '(?#QuotedOrSingleWord)':
-        r'("[^"\\]*(?:\\.[^"\\]*)*"|\'[^\'\\]*(?:\\.[^\'\\]*)*\'|\S+)',
-    # Match whitespace up to hash symbol
-    '(?#WSUpToHash)':
-        r'([^\s#]+(?:[ \t\v\f]*[^\s#]+)+)',
-    # Match whitespace up to semicolon
-    '(?#WSUpToSemicolon)':
-        r'([^\s;]+(?:[ \t\v\f]*[^\s;]+)+)',
-}
-keyword_sub = Textsub(keyword_dict)
+keyword_sub = Textsub(DOTFILTERS_KEYWORD_DICT)
 keyword_sub.compile()
 
 

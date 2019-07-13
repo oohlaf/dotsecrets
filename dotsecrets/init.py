@@ -1,4 +1,5 @@
 import logging
+import re
 import shutil
 import subprocess
 
@@ -9,6 +10,7 @@ from dotsecrets.clean import load_all_filters
 from dotsecrets.smudge import (load_all_secrets,
                                get_smudge_filter,
                                smudge_stream)
+from dotsecrets.params import GIT_ATTR_DOTSECRETS
 from dotsecrets.utils import get_dotfiles_path, is_sub_path
 
 
@@ -56,6 +58,34 @@ def check_git_config():
     return True
 
 
+def contains_filter_definition(git_attr_file):
+    pattern = re.compile(GIT_ATTR_DOTSECRETS)
+    with open(git_attr_file, 'r', encoding='utf-8') as f:
+        for line in f:
+            if pattern.match(line):
+                return True
+    return False
+
+
+def append_filter_definition(git_attr_file):
+    with open(git_attr_file, 'a', encoding='utf-8') as f:
+        f.write('* filter=dotsecrets\n')
+
+
+def check_git_attributes():
+    dotfiles_path = get_dotfiles_path()
+    git_info_attr_file = dotfiles_path.joinpath('.git/info/attributes')
+    if git_info_attr_file.exists():
+        if contains_filter_definition(git_info_attr_file):
+            return True
+    git_attr_file = dotfiles_path.joinpath('.gitattributes')
+    if git_attr_file.exists():
+        if contains_filter_definition(git_attr_file):
+            return True
+    append_filter_definition(git_attr_file)
+    return True
+
+
 def initial_smudge(filters_file, secrets_file):
     filters_dict, filters_file = load_all_filters(filters_file)
     secrets_dict, secrets_file = load_all_secrets(secrets_file)
@@ -80,5 +110,5 @@ def initial_smudge(filters_file, secrets_file):
 
 
 def init(args):
-    if check_git_config():
+    if check_git_config() and check_git_attributes():
         initial_smudge(args.filters, args.store)
