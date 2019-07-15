@@ -244,5 +244,5 @@ References
 .. [2] https://github.com/jim/briefcase
 .. [3] https://git-scm.com/docs/gitattributes
 .. [4] https://pypi.org/project/ruamel.yaml
-.. [5] https://pypi.org/project/dploy/
+.. [5] https://pypi.org/project/dploy
 .. [6] https://docs.python.org/3/library/re.html#regular-expression-syntax
