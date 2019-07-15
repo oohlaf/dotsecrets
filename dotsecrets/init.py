@@ -1,12 +1,13 @@
 import logging
+import random
 import re
 import shutil
+import string
 import subprocess
 
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 
-from dotsecrets.clean import load_all_filters
+from dotsecrets.clean import load_all_filters, get_clean_filter
 from dotsecrets.smudge import (load_all_secrets,
                                get_smudge_filter,
                                smudge_stream)
@@ -91,19 +92,18 @@ def initial_smudge(filters_file, secrets_file):
     secrets_dict, secrets_file = load_all_secrets(secrets_file)
     dotfiles_path = get_dotfiles_path()
     for name in filters_dict['filters']:
+        clean_filter = get_clean_filter(name, filters_file, filters_dict)
         smudge_filter = get_smudge_filter(name, secrets_file, secrets_dict)
+        smudge_filter.read_mode = clean_filter.read_mode
+        smudge_filter.write_mode = clean_filter.write_mode
+        smudge_filter.encoding = clean_filter.encoding
         source_file = dotfiles_path.joinpath(name)
         source_stat = source_file.stat()
-        tmp_file = NamedTemporaryFile(mode='w', encoding='utf-8',
-                                      prefix=source_file.name,
-                                      dir=source_file.parent,
-                                      delete=False)
-        try:
-            with open(source_file, 'r', encoding='utf-8') as f:
-                smudge_stream(f, tmp_file, smudge_filter)
-        finally:
-            tmp_file.close()
-        dest_file = Path(tmp_file.name)
+        random_string = ''.join([random.choice(string.ascii_lowercase)
+                                 for i in range(16)])
+        dest_file = source_file.with_name(source_file.name + '.' +
+                                          random_string)
+        smudge_stream(source_file, dest_file, smudge_filter)
         shutil.copystat(source_file, dest_file)
         shutil.chown(dest_file, source_stat.st_uid, source_stat.st_gid)
         dest_file.rename(source_file)

@@ -1,5 +1,7 @@
-import re
+import io
 import logging
+import re
+import sys
 
 from ruamel.yaml import YAML
 
@@ -20,15 +22,25 @@ keyword_sub.compile()
 
 
 class CleanFilter(object):
-    def __init__(self, name, rules=None):
-        if rules is None:
-            rules = {}
+    def __init__(self, name, definition=None):
+        if definition is None:
+            definition = {'rules': {}}
         self.name = name
-        self.rules = rules
-        self.parse_rules()
+        self.rules = {}
+        self.read_mode = 'r'
+        self.write_mode = 'w'
+        self.encoding = 'utf-8'
+        self.parse_definition(definition)
 
-    def parse_rules(self):
-        for key, rule_def in self.rules.items():
+    def parse_definition(self, definition):
+        self.rules = {}
+        if 'encoding' in definition:
+            self.encoding = definition['encoding']
+        if 'rules' in definition:
+            rules = definition['rules']
+        else:
+            rules = {}
+        for key, rule_def in rules.items():
             self.rules[key] = CleanSecret(key=key, **rule_def)
 
     def sub(self, line):
@@ -122,18 +134,50 @@ def get_clean_filter(name, filters_file=None, filters_dict=None):
         logger.info("No filter named '%s' found in file '%s', "
                     "using copy filter.", name, filters_file)
         return CopyFilter()
-    return CleanFilter(name=name, rules=filters_def['rules'])
+    return CleanFilter(name=name, definition=filters_def)
 
 
-def clean_stream(input_stream, output_stream, clean_filter):
-    while True:
-        try:
-            line = input_stream.readline()
-        except KeyboardInterrupt:
-            break
-        if not line:
-            break
-        output_stream.write(clean_filter.sub(line))
+def clean_stream(input_file, output_file, clean_filter):
+    if 'b' in clean_filter.read_mode:
+        # Binary mode
+        with (open(output_file,
+                   mode=clean_filter.write_mode,
+                   encoding=clean_filter.encoding) if output_file != '-'
+              else sys.stdout.buffer) as output_stream:
+            with (open(input_file,
+                       mode=clean_filter.read_mode,
+                       encoding=clean_filter.encoding) if input_file != '-'
+                  else sys.stdin.buffer) as input_stream:
+                while True:
+                    try:
+                        data = input_stream.read(io.DEFAULT_BUFFER_SIZE)
+                    except KeyboardInterrupt:
+                        break
+                    if not data:
+                        break
+                    output_stream.write(clean_filter.sub(data))
+    else:
+        # Text mode
+        if output_file == '-':
+            sys.stdout.reconfigure(encoding=clean_filter.encoding)
+        if input_file == '-':
+            sys.stdin.reconfigure(encoding=clean_filter.encoding)
+        with (open(output_file,
+                   mode=clean_filter.write_mode,
+                   encoding=clean_filter.encoding) if output_file != '-'
+              else sys.stdout) as output_stream:
+            with (open(input_file,
+                       mode=clean_filter.read_mode,
+                       encoding=clean_filter.encoding) if input_file != '-'
+                  else sys.stdin) as input_stream:
+                while True:
+                    try:
+                        line = input_stream.readline()
+                    except KeyboardInterrupt:
+                        break
+                    if not line:
+                        break
+                    output_stream.write(clean_filter.sub(line))
 
 
 def clean(args):

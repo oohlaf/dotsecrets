@@ -1,13 +1,9 @@
 # Original algorithm by Xavier Defrang.
 # http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/81330
 # This implementation by alane@sourceforge.net.
-
 import re
 
-try:
-    from UserDict import UserDict
-except ImportError:
-    from collections import UserDict
+from collections import UserDict
 
 
 class Textsub(UserDict):
@@ -34,5 +30,10 @@ class Textsub(UserDict):
 
 
 class CopyFilter(object):
+    def __init__(self):
+        self.read_mode = 'rb'
+        self.write_mode = 'wb'
+        self.encoding = None
+
     def sub(self, line):
         return line

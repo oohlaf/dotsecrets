@@ -71,6 +71,7 @@ Its syntax is as follows:
             regex: password(\s*)=(\s*)(?#WSUpToHash)
             substitute: password\1=\2(?#Key)
       "irssi/.irssi/config":
+        encoding: latin1
         rules:
           nickname:
             description: IRC nickname
@@ -92,21 +93,23 @@ as ``true``. This allows for multiple matches and substitutions as long as the
 ordering in the file is retained.
 
 The second example shows a filter for hiding your nickname in an Irssi
-configuration file. The regular expression matches any line containing the
-word nick followed by whitespace and one or more alphanumeric characters. A
-match is replaced by ``nick = "$DotSecrets: nickname$";``.
+configuration file. The encoding field will make sure the file is opened
+in the specified encoding (default encoding is utf-8). The regular expression
+matches any line containing the word nick followed by whitespace and one or
+more alphanumeric characters. A match is replaced by
+``nick = "$DotSecrets: nickname$";``.
 
 Similar for the filter to hide your real name in the same file. The regular
 expression matches any line containing ``real_name`` followed by an equal
 sign, quoted text and a final semi-colon. A match is replaced by
 ``real_name = "$DotSecrets: realname$";``.
 
-Please note that the description and number fields are optional.
+Please note that the description, numbered and encoding fields are optional.
 
 The regular expressions and substitutions follow the Python regular expression
 syntax [6]_. Substitutions can reference regex groups ``(...)`` using
 ``\number`` syntax. To make it easier to define complex regular expressions,
-the following hortcuts are available. They are defined as regex comments
+the following shortcuts are available. They are defined as regex comments
 ``(?#...)``:
 
 ======================  ====================================================

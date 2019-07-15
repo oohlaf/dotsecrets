@@ -27,6 +27,8 @@ setup(name='dotsecrets',
         "Topic :: System :: Shells",
         "Operating System :: POSIX",
         "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Topic :: Software Development :: Version Control",
         "Topic :: System :: Systems Administration",
         "Topic :: Utilities"
