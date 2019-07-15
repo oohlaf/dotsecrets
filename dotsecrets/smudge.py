@@ -1,11 +1,15 @@
-import re
+import io
 import logging
+import re
+import sys
 
 from ruamel.yaml import YAML
 
+from dotsecrets.clean import get_clean_filter
 from dotsecrets.params import TAG_SECRET_START, TAG_SECRET_END
 from dotsecrets.utils import get_dotsecrets_file
 from dotsecrets.textsub import CopyFilter
+
 
 yaml = YAML(typ='safe')
 logger = logging.getLogger(__name__)
@@ -17,6 +21,9 @@ class SmudgeFilter(object):
             secrets = {}
         self.name = name
         self.secrets = secrets
+        self.read_mode = 'r'
+        self.write_mode = 'w'
+        self.encoding = 'utf-8'
         self.parse_secrets()
         regex = re.escape(TAG_SECRET_START) + r'(\S+)' + \
             re.escape(TAG_SECRET_END)
@@ -85,17 +92,55 @@ def get_smudge_filter(name, secrets_file=None, secrets_dict=None):
     return SmudgeFilter(name=name, secrets=secrets_def['secrets'])
 
 
-def smudge_stream(input_stream, output_stream, smudge_filter):
-    while True:
-        try:
-            line = input_stream.readline()
-        except KeyboardInterrupt:
-            break
-        if not line:
-            break
-        output_stream.write(smudge_filter.sub(line))
+def smudge_stream(input_file, output_file, smudge_filter):
+    if 'b' in smudge_filter.read_mode:
+        # Binary mode
+        with (open(output_file,
+                   mode=smudge_filter.write_mode,
+                   encoding=smudge_filter.encoding) if output_file != '-'
+              else sys.stdout.buffer) as output_stream:
+            with (open(input_file,
+                       mode=smudge_filter.read_mode,
+                       encoding=smudge_filter.encoding) if input_file != '-'
+                  else sys.stdin.buffer) as input_stream:
+                while True:
+                    try:
+                        data = input_stream.read(io.DEFAULT_BUFFER_SIZE)
+                    except KeyboardInterrupt:
+                        break
+                    if not data:
+                        break
+                    output_stream.write(smudge_filter.sub(data))
+    else:
+        # Text mode
+        if output_file == '-':
+            sys.stdout.reconfigure(encoding=smudge_filter.encoding)
+        if input_file == '-':
+            sys.stdin.reconfigure(encoding=smudge_filter.encoding)
+        with (open(output_file,
+                   mode=smudge_filter.write_mode,
+                   encoding=smudge_filter.encoding) if output_file != '-'
+              else sys.stdout) as output_stream:
+            with (open(input_file,
+                       mode=smudge_filter.read_mode,
+                       encoding=smudge_filter.encoding) if input_file != '-'
+                  else sys.stdin) as input_stream:
+                while True:
+                    try:
+                        line = input_stream.readline()
+                    except KeyboardInterrupt:
+                        break
+                    if not line:
+                        break
+                    output_stream.write(smudge_filter.sub(line))
 
 
 def smudge(args):
+    # The mode and encoding for the file is defined in the dotfilter file
+    # and put them in the smudge filter
+    clean_filter = get_clean_filter(args.name, args.filters)
     smudge_filter = get_smudge_filter(args.name, args.store)
+    smudge_filter.read_mode = clean_filter.read_mode
+    smudge_filter.write_mode = clean_filter.write_mode
+    smudge_filter.encoding = clean_filter.encoding
     smudge_stream(args.input, args.output, smudge_filter)

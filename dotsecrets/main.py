@@ -42,13 +42,11 @@ def main():
     subparsers = parser.add_subparsers()
 
     file_parser = argparse.ArgumentParser(add_help=False)
-    file_parser.add_argument('--input', metavar='FILE',
-                             type=argparse.FileType('r'), default=sys.stdin,
+    file_parser.add_argument('--input', metavar='FILE', default='-',
                              help="read input from FILE, "
                                   "default is '-' stdin")
-    file_parser.add_argument('--output', metavar='FILE',
-                             type=argparse.FileType('w'), default=sys.stdout,
-                             help="write output from FILE, "
+    file_parser.add_argument('--output', metavar='FILE', default='-',
+                             help="write output to FILE, "
                                   "default is '-' stdout")
 
     parser_clean = subparsers.add_parser('clean', parents=[file_parser])
@@ -58,6 +56,8 @@ def main():
     parser_clean.set_defaults(func=clean)
 
     parser_smudge = subparsers.add_parser('smudge', parents=[file_parser])
+    parser_smudge.add_argument('--filters', metavar='FILE',
+                               help='load filters from FILE')
     parser_smudge.add_argument('--store', metavar='FILE',
                                help='load secrets from FILE')
     parser_smudge.add_argument('name')
