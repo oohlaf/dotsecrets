@@ -107,6 +107,19 @@ def initial_smudge(filters_file, secrets_file):
         shutil.copystat(source_file, dest_file)
         shutil.chown(dest_file, source_stat.st_uid, source_stat.st_gid)
         dest_file.rename(source_file)
+    try:
+        subprocess.run(['git', 'diff', '--exit-code'],
+                       stdout=subprocess.DEVNULL,
+                       check=True)
+    except subprocess.CalledProcessError:
+        return
+    else:
+        try:
+            subprocess.run(['git', 'add', '--update'],
+                           stdout=subprocess.DEVNULL,
+                           check=True)
+        except subprocess.CalledProcessError:
+            return
 
 
 def init(args):
