@@ -261,8 +261,10 @@ To test your filter definitions a ``test`` command is available::
 Two intermediate files are created: ``config.dotclean`` and
 ``config.dotsmudge``. The difference is shown between the original source
 (which contains secrets) and the cleaned up file (which will contain
-markers). Then the cleaned source is smudged to replace the markers with
-the secrets from your secrets store.
+markers). In the next step the cleaned source is smudged to replace the
+markers with the secrets from your secrets store. The resulting file should
+be identical to the original source file. If that is not the case, the
+difference is shown.
 
 Suppose a typo was made in the secrets store::
 
@@ -294,9 +296,10 @@ Suppose a typo was made in the secrets store::
     Source '/home/olaf/src/dotfiles/irssi/.irssi/config' and smudged source differ
     Please adjust filter definition or validate your stored secrets
 
-In this case the nick was set to myname not mynick. The intermediate files
-are deleted after the comparison is made. If you want to retain those files
-for closer inspection, specify the ``--keep`` flag on the command line.
+In the example above, key nick was set to myname not mynick in the secrets
+store. When the command finishes, the intermediate files are deleted. If you
+want to retain those files for closer inspection, specify the ``--keep``
+flag on the command line.
 
 When you are satisfied with the output you can add the original source under
 version control. The clean filter will be applied before the commit.
