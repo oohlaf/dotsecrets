@@ -144,3 +144,4 @@ def smudge(args):
     smudge_filter.write_mode = clean_filter.write_mode
     smudge_filter.encoding = clean_filter.encoding
     smudge_stream(args.input, args.output, smudge_filter)
+    return 0

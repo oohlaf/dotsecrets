@@ -89,7 +89,7 @@ def main():
     args = parser.parse_args()
     configure_logging(args)
     try:
-        args.func(args)
+        return args.func(args)
     except AttributeError as exc:
         try:
             if exc.args[0] == "'Namespace' object has no attribute 'func'":
@@ -103,4 +103,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    exit(main())
