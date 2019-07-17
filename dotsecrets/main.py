@@ -49,19 +49,26 @@ def main():
                              help="write output to FILE, "
                                   "default is '-' stdout")
 
-    parser_clean = subparsers.add_parser('clean', parents=[file_parser])
-    parser_clean.add_argument('--filters', metavar='FILE',
-                              help='load filters from FILE')
-    parser_clean.add_argument('name')
-    parser_clean.set_defaults(func=clean)
+    filter_parser = argparse.ArgumentParser(add_help=False)
+    filter_parser.add_argument('--filters', metavar='FILE',
+                                help='load filters from FILE')
 
-    parser_smudge = subparsers.add_parser('smudge', parents=[file_parser])
-    parser_smudge.add_argument('--filters', metavar='FILE',
-                               help='load filters from FILE')
-    parser_smudge.add_argument('--store', metavar='FILE',
-                               help='load secrets from FILE')
-    parser_smudge.add_argument('name')
-    parser_smudge.set_defaults(func=smudge)
+    store_parser = argparse.ArgumentParser(add_help=False)
+    store_parser.add_argument('--store', metavar='FILE',
+                              help='load secrets from FILE')
+
+    clean_cmd_parser = subparsers.add_parser('clean',
+                                             parents=[file_parser,
+                                                      filter_parser])
+    clean_cmd_parser.add_argument('name')
+    clean_cmd_parser.set_defaults(func=clean)
+
+    smudge_cmd_parser = subparsers.add_parser('smudge',
+                                              parents=[file_parser,
+                                                       filter_parser,
+                                                       store_parser])
+    smudge_cmd_parser.add_argument('name')
+    smudge_cmd_parser.set_defaults(func=smudge)
 
     dploy_parser = argparse.ArgumentParser(add_help=False)
     dploy_parser.add_argument('--all', dest='source_all',
@@ -73,18 +80,16 @@ def main():
     dploy_parser.add_argument('source', nargs='*',
                               help="source directory to act upon")
 
-    parser_stow = subparsers.add_parser('stow', parents=[dploy_parser])
-    parser_stow.set_defaults(func=stow)
+    stow_cmd_parser = subparsers.add_parser('stow', parents=[dploy_parser])
+    stow_cmd_parser.set_defaults(func=stow)
 
-    parser_unstow = subparsers.add_parser('unstow', parents=[dploy_parser])
-    parser_unstow.set_defaults(func=unstow)
+    unstow_cmd_parser = subparsers.add_parser('unstow', parents=[dploy_parser])
+    unstow_cmd_parser.set_defaults(func=unstow)
 
-    parser_init = subparsers.add_parser('init')
-    parser_init.add_argument('--filters', metavar='FILE',
-                             help='load filters from FILE')
-    parser_init.add_argument('--store', metavar='FILE',
-                             help='load secrets from FILE')
-    parser_init.set_defaults(func=init)
+    init_cmd_parser = subparsers.add_parser('init',
+                                            parents=[filter_parser,
+                                                     store_parser])
+    init_cmd_parser.set_defaults(func=init)
 
     args = parser.parse_args()
     configure_logging(args)
