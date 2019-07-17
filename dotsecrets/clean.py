@@ -183,3 +183,4 @@ def clean_stream(input_file, output_file, clean_filter):
 def clean(args):
     clean_filter = get_clean_filter(args.name, args.filters)
     clean_stream(args.input, args.output, clean_filter)
+    return 0
