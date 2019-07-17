@@ -14,9 +14,26 @@ from dotsecrets.params import (DOTFILES_PATH,
 logger = logging.getLogger(__name__)
 
 
+def get_git_repository_root():
+    cwd_path = Path.cwd()
+    parent_paths = [cwd_path,]
+    parent_paths.extend(cwd_path.parents)
+    for parent_path in parent_paths:
+        if parent_path.joinpath('.git').exists():
+            logger.debug("Git repository root is '%s'", parent_path)
+            return parent_path
+    logger.debug("No Git repository found")
+    return None
+
+
 def get_dotfiles_path():
-    env_dotfiles = os.getenv('DOTFILES_PATH', DOTFILES_PATH)
-    files_path = Path(env_dotfiles)
+    env_dotfiles = os.getenv('DOTFILES_PATH')
+    if env_dotfiles is not None:
+        files_path = Path(env_dotfiles)
+    else:
+        files_path = get_git_repository_root()
+        if files_path is None:
+            files_path = Path(DOTFILES_PATH)
     if not files_path.is_absolute():
         files_path = Path.home().joinpath(files_path)
     logger.debug("Dotfiles path is '%s'", files_path)

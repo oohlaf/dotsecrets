@@ -11,11 +11,21 @@ from dotsecrets.clean import load_all_filters, get_clean_filter
 from dotsecrets.smudge import (load_all_secrets,
                                get_smudge_filter,
                                smudge_stream)
-from dotsecrets.params import GIT_ATTR_DOTSECRETS
-from dotsecrets.utils import get_dotfiles_path, is_sub_path
+from dotsecrets.params import GIT_ATTR_DOTSECRETS, DOTFILTERS_V2_YAML
+from dotsecrets.utils import (get_dotfiles_path,
+                              get_dotfilters_file,
+                              is_sub_path)
 
 
 logger = logging.getLogger(__name__)
+
+
+def check_dotfilters():
+    filters_file = get_dotfilters_file()
+    if not filters_file.exists():
+        with open(filters_file, 'w', encoding='utf-8') as f:
+            f.write(DOTFILTERS_V2_YAML)
+    return True
 
 
 def check_git_config():
@@ -126,5 +136,5 @@ def initial_smudge(filters_file, secrets_file):
 
 
 def init(args):
-    if check_git_config() and check_git_attributes():
+    if check_dotfilters() and check_git_config() and check_git_attributes():
         return initial_smudge(args.filters, args.store)
