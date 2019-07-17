@@ -8,6 +8,7 @@ from dotsecrets.clean import clean
 from dotsecrets.init import init
 from dotsecrets.smudge import smudge
 from dotsecrets.stow import stow, unstow
+from dotsecrets.test import test
 
 
 logger = logging.getLogger()
@@ -90,6 +91,14 @@ def main():
                                             parents=[filter_parser,
                                                      store_parser])
     init_cmd_parser.set_defaults(func=init)
+
+    test_cmd_parser = subparsers.add_parser('test',
+                                            parents=[filter_parser,
+                                                     store_parser])
+    test_cmd_parser.add_argument('--keep', action='store_true',
+                                 help='keep intermediate files')
+    test_cmd_parser.add_argument('name')
+    test_cmd_parser.set_defaults(func=test)
 
     args = parser.parse_args()
     configure_logging(args)

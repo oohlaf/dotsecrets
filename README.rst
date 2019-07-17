@@ -237,6 +237,71 @@ To remove the symbolic links from your home directory, run::
     dploy stow: unlink /home/user/.mutt => dotfiles/mutt/.mutt
 
 
+Adding new dotfiles
+-------------------
+
+Defining regular expressions for new filters might require some practise.
+To test your filter definitions a ``test`` command is available::
+
+    $ dotsecrets test irssi/.irssi/config
+    --- /home/olaf/src/dotfiles/irssi/.irssi/config 2019-07-15 22:40:03.782600150 +0200
+    +++ /home/olaf/src/dotfiles/irssi/.irssi/config.dotclean        2019-07-17 21:23:22.813039617 +0200
+    @@ -286,8 +286,8 @@
+
+     settings = {
+       core = {
+    -    real_name = "My Real Name";
+    -    nick = "mynick";
+    +    real_name = "$DotSecrets: realname$";
+    +    nick = "$DotSecrets: nick$";
+       };
+       "fe-text" = { actlist_sort = "refnum"; scrollback_lines = "2000"; };
+       "fe-common/core" = {
+
+Two intermediate files are created: ``config.dotclean`` and
+``config.dotsmudge``. The difference is shown between the original source
+(which contains secrets) and the cleaned up file (which will contain
+markers). Then the cleaned source is smudged to replace the markers with
+the secrets from your secrets store.
+
+Suppose a typo was made in the secrets store::
+
+    $ dotsecrets test irssi/.irssi/config
+    --- /home/olaf/src/dotfiles/irssi/.irssi/config 2019-07-15 22:40:03.782600150 +0200
+    +++ /home/olaf/src/dotfiles/irssi/.irssi/config.dotclean        2019-07-17 21:23:22.813039617 +0200
+    @@ -286,8 +286,8 @@
+
+     settings = {
+       core = {
+    -    real_name = "My Real Name";
+    -    nick = "mynick";
+    +    real_name = "$DotSecrets: realname$";
+    +    nick = "$DotSecrets: nick$";
+       };
+       "fe-text" = { actlist_sort = "refnum"; scrollback_lines = "2000"; };
+       "fe-common/core" = {
+    --- /home/olaf/src/dotfiles/irssi/.irssi/config 2019-07-17 21:27:21.118130339 +0200
+    +++ /home/olaf/src/dotfiles/irssi/.irssi/config.dotsmudge       2019-07-17 21:36:48.327586627 +0200
+    @@ -287,7 +287,7 @@
+     settings = {
+       core = {
+         real_name = "My Real Name";
+    -    nick = "mynick";
+    +    nick = "myname";
+       };
+       "fe-text" = { actlist_sort = "refnum"; scrollback_lines = "2000"; };
+       "fe-common/core" = {
+    Source '/home/olaf/src/dotfiles/irssi/.irssi/config' and smudged source differ
+    Please adjust filter definition or validate your stored secrets
+
+In this case the nick was set to myname not mynick. The intermediate files
+are deleted after the comparison is made. If you want to retain those files
+for closer inspection, specify the ``--keep`` flag on the command line.
+
+When you are satisfied with the output you can add the original source under
+version control. The clean filter will be applied before the commit.
+
+
 References
 ==========
 

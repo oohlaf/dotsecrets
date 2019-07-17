@@ -32,3 +32,7 @@ DOTFILTERS_KEYWORD_DICT = {
 
 # Pattern used to detect presence of the dotsecrets filter in git attributes
 GIT_ATTR_DOTSECRETS = r'^[^#].*filter=dotsecrets'
+
+# Suffixes used for intermediate files created by test command
+TEST_CLEAN_SUFFIX = '.dotclean'
+TEST_SMUDGE_SUFFIX = '.dotsmudge'
