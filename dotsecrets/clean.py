@@ -141,12 +141,10 @@ def clean_stream(input_file, output_file, clean_filter):
     if 'b' in clean_filter.read_mode:
         # Binary mode
         with (open(output_file,
-                   mode=clean_filter.write_mode,
-                   encoding=clean_filter.encoding) if output_file != '-'
+                   mode=clean_filter.write_mode) if output_file != '-'
               else sys.stdout.buffer) as output_stream:
             with (open(input_file,
-                       mode=clean_filter.read_mode,
-                       encoding=clean_filter.encoding) if input_file != '-'
+                       mode=clean_filter.read_mode) if input_file != '-'
                   else sys.stdin.buffer) as input_stream:
                 while True:
                     try:

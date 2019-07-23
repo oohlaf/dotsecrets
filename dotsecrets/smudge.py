@@ -96,12 +96,10 @@ def smudge_stream(input_file, output_file, smudge_filter):
     if 'b' in smudge_filter.read_mode:
         # Binary mode
         with (open(output_file,
-                   mode=smudge_filter.write_mode,
-                   encoding=smudge_filter.encoding) if output_file != '-'
+                   mode=smudge_filter.write_mode) if output_file != '-'
               else sys.stdout.buffer) as output_stream:
             with (open(input_file,
-                       mode=smudge_filter.read_mode,
-                       encoding=smudge_filter.encoding) if input_file != '-'
+                       mode=smudge_filter.read_mode) if input_file != '-'
                   else sys.stdin.buffer) as input_stream:
                 while True:
                     try:

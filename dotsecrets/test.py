@@ -45,8 +45,14 @@ def check_test_results(source_file, clean_file, smudge_file):
 def delete_test_results(clean_file, smudge_file):
     logger.info("Delete intermediate files '%s' and '%s'",
                 clean_file, smudge_file)
-    clean_file.unlink()
-    smudge_file.unlink()
+    try:
+        clean_file.unlink()
+    except FileNotFoundError:
+        pass
+    try:
+        smudge_file.unlink()
+    except FileNotFoundError:
+        pass
 
 
 def test(args):
@@ -65,9 +71,19 @@ def test(args):
         smudge_filter.encoding = clean_filter.encoding
         smudge_stream(clean_file, smudge_file, smudge_filter)
         if check_test_results(source_file, clean_file, smudge_file):
+            logger.info('Source and result after clean and smudge '
+                        'filters are identical')
             return 0
         else:
             return 1
+    except TypeError as exc:
+        if (exc.args[0] == "cannot use a string pattern on "
+                           "a bytes-like object"):
+            logger.exception("Binary mismatch between "
+                             "clean and smudge filter",
+                             exc_info=logger.isEnabledFor(logging.DEBUG))
+        else:
+            raise
     finally:
         if not args.keep:
             delete_test_results(clean_file, smudge_file)

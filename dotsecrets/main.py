@@ -105,11 +105,8 @@ def main():
     try:
         return args.func(args)
     except AttributeError as exc:
-        try:
-            if exc.args[0] == "'Namespace' object has no attribute 'func'":
-                parser.error("too few arguments")
-        except (KeyError, AttributeError):
-            pass
+        if exc.args[0] == "'Namespace' object has no attribute 'func'":
+            parser.error("too few arguments")
         else:
             logger.exception(exc, exc_info=logger.isEnabledFor(logging.DEBUG))
     except Exception as exc:
