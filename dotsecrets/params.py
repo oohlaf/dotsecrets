@@ -36,3 +36,8 @@ GIT_ATTR_DOTSECRETS = r'^[^#].*filter=dotsecrets'
 # Suffixes used for intermediate files created by test command
 TEST_CLEAN_SUFFIX = '.dotclean'
 TEST_SMUDGE_SUFFIX = '.dotsmudge'
+
+# Yaml template for dotfilters version 2
+DOTFILTERS_V2_YAML = """version: 2
+filters: {}
+"""
