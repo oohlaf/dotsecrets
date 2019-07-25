@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-"ruamel.yaml" = "*"
-dploy = "*"
+"ruamel.yaml" = ">=0.15.100"
+dploy = ">=0.1.2"
 
 [dev-packages]
 
