@@ -1,6 +1,10 @@
 Changes
 =======
 
+0.3.1 (2019-07-25)
+------------------
+- Testing on PyPI resulted in stricter dependencies
+
 0.3 (2019-07-25)
 ----------------
 - Code changed to Python 3 only

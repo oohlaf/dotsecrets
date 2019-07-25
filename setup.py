@@ -14,8 +14,8 @@ with open(os.path.join(HERE, 'CHANGES.rst'), encoding='utf-8') as f:
 PACKAGES = find_packages(exclude=['tests'])
 
 REQUIRES = [
-    'ruamel.yaml',
-    'dploy',
+    'ruamel.yaml>=0.15.100',
+    'dploy>=0.1.2',
 ]
 
 META = {}
