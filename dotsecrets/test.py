@@ -71,8 +71,6 @@ def test(args):
         smudge_filter.encoding = clean_filter.encoding
         smudge_stream(clean_file, smudge_file, smudge_filter)
         if check_test_results(source_file, clean_file, smudge_file):
-            logger.info('Source and result after clean and smudge '
-                        'filters are identical')
             return 0
         else:
             return 1

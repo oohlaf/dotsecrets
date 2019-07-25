@@ -1,30 +1,34 @@
 DotSecrets
 ==========
 
-DotSecrets [1]_ is a tool to facilitate keeping your dotfiles in Git, including
-those with private information.
+DotSecrets [1]_ is a tool written by Olaf Conradi to facilitate storing
+your dotfiles in Git, including those with private information.
 
-By keeping your configuration files in a public Git repository, you can share
-your settings with others. Any private information is kept in a single file
-store outside the repository. It's up to the user to transport this file.
+By storing your configuration files in a public Git repository, you can
+synchronize your settings between multiple devices or share them with
+others. Any private information is kept in a single file store outside
+the repository. It's up to the user to transport this file between devices.
 
 This tool is similar in functionality to Briefcase [2]_ but differs
-significantly. DotSecrets uses Git filtering to manage private information and
-uses a different file hierarchy and naming convention.
+significantly. DotSecrets uses Git filtering to manage private information
+and uses a different file hierarchy and naming convention.
 
 For more information on the filtering capabilities of Git, see the
 git attributes manual [3]_ in section Effects under filter attribute.
 
 Symbolic linking and unlinking is supported by organizing your dotfiles in
-modules (specific topic names as top level directory within your repository).
-The stow and unstow commands automate linking and unlinking them.
+topics (specific topic names as top level directory within your repository).
+The stow and unstow commands automate linking and unlinking them. You decide
+how to name your topics. Either by application or device name, or a
+combination of the two. This practise is explained in a blog article [4]_ by
+Brandon Invergo back in 2012.
 
 
 Dependencies
 ------------
 
-DotSecrets depends on ruamel.yaml [4]_ for reading configuration files and
-dploy [5]_ for stow functionality.
+DotSecrets depends on ruamel.yaml [5]_ for reading configuration files and
+dploy [6]_ for stow functionality.
 
 
 Installation
@@ -32,14 +36,17 @@ Installation
 
 Run::
 
-    $ pip3 install .
+    $ pip3 install dotsecrets
 
 You should then have a ``dotsecrets`` script available in a new shell.
+
+When installing directly from the Git repository [1]_ use::
+
+    $ pip3 install .
 
 You might need to symlink it into your ``~/bin`` folder::
 
     $ ln -s ~/.local/bin/dotsecrets ~/bin
-
 
 
 Usage
@@ -48,7 +55,8 @@ Usage
 DotSecrets is to be used together with Git to manage your dotfiles.
 
 Git filters are used to clean and smudge secrets. Each filter is configured
-using regular expressions grouped per filter name.
+using regular expressions grouped per filter name. The filters are named
+after the file path relative to the Git root directory.
 
 
 Filters
@@ -107,7 +115,7 @@ sign, quoted text and a final semi-colon. A match is replaced by
 Please note that the description, numbered and encoding fields are optional.
 
 The regular expressions and substitutions follow the Python regular expression
-syntax [6]_. Substitutions can reference regex groups ``(...)`` using
+syntax [7]_. Substitutions can reference regex groups ``(...)`` using
 ``\number`` syntax. To make it easier to define complex regular expressions,
 the following shortcuts are available. They are defined as regex comments
 ``(?#...)``:
@@ -190,14 +198,18 @@ They result in the following addition to your ``.git/config`` file:
         smudge = dotsecrets smudge %f
         required = true
 
+Upon filtering (typically on git checkin, checkout or diff) the ``%f``
+argument is replaced by the file path relative to the Git root directory.
+This is why filters must be named accordingly.
+
 
 Initialize Repository
 ---------------------
 
 Upon a fresh checkout of the dotfiles repository, the git filter and git
-attributes configuration is not yet in place. The ``init`` command is
+attributes configuration are not yet in place. The ``init`` command is
 available to initialize the configuration (when needed) and do the initial
-smudge on files listed as having secrets.
+smudge on files defined as having secrets.
 
 Example::
 
@@ -209,11 +221,11 @@ Example::
 Stow and Unstow
 ---------------
 
-Using the stow command each module is linked into your home directory. The
-unstow command will unlink them. The modules to act upon are specified
-on the command line. To act on all modules pass the ``--all`` argument.
-Add ``--dry-run`` to simulate which actions will be taken without doing
-them.
+Using the stow command each topic is linked into your home directory. The
+unstow command will unlink them. The topics to act upon are specified
+on the command line. To act on all available topics pass the ``--all``
+argument. Add ``--dry-run`` to simulate which actions will be taken
+without doing them.
 
 To stow and unstow the current working directory must be set inside the
 dotfilters repository.
@@ -222,10 +234,10 @@ Example::
 
     $ dotsecrets stow mutt irssi
 
-This will stow both modules.
+This will stow both topics.
 
 Use the following to simulate the actions for linking mutt. The output
-is a list of actions needed to stow the module::
+is a list of actions needed::
 
     $ dotsecrets stow --dry-run mutt
     dploy stow: link /home/user/.mutt => dotfiles/mutt/.mutt
@@ -261,10 +273,9 @@ To test your filter definitions a ``test`` command is available::
 Two intermediate files are created: ``config.dotclean`` and
 ``config.dotsmudge``. The difference is shown between the original source
 (which contains secrets) and the cleaned up file (which will contain
-markers). In the next step the cleaned source is smudged to replace the
-markers with the secrets from your secrets store. The resulting file should
-be identical to the original source file. If that is not the case, the
-difference is shown.
+markers). Next, the cleaned source is smudged to replace the markers with the
+secrets from your secrets store. The resulting file should be identical to
+the original source file. If that is not the case, the difference is shown.
 
 Suppose a typo was made in the secrets store::
 
@@ -297,8 +308,8 @@ Suppose a typo was made in the secrets store::
     Please adjust filter definition or validate your stored secrets
 
 In the example above, key nick was set to myname not mynick in the secrets
-store. When the command finishes, the intermediate files are deleted. If you
-want to retain those files for closer inspection, specify the ``--keep``
+store. When the execution finishes, the intermediate files are deleted. If
+you want to retain those files for closer inspection, specify the ``--keep``
 flag on the command line.
 
 When you are satisfied with the output you can add the original source under
@@ -311,6 +322,7 @@ References
 .. [1] https://github.com/oohlaf/dotsecrets
 .. [2] https://github.com/jim/briefcase
 .. [3] https://git-scm.com/docs/gitattributes
-.. [4] https://pypi.org/project/ruamel.yaml
-.. [5] https://pypi.org/project/dploy
-.. [6] https://docs.python.org/3/library/re.html#regular-expression-syntax
+.. [4] http://brandon.invergo.net/news/2012-05-26-using-gnu-stow-to-manage-your-dotfiles.html
+.. [5] https://pypi.org/project/ruamel.yaml
+.. [6] https://pypi.org/project/dploy
+.. [7] https://docs.python.org/3/library/re.html#regular-expression-syntax

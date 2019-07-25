@@ -1,11 +1,11 @@
-#!/usr/bin/env python
-
+#!/usr/bin/env python3
 import argparse
 import logging
 import sys
 
 from dotsecrets.clean import clean
 from dotsecrets.init import init
+from dotsecrets.metadata import VERSION
 from dotsecrets.smudge import smudge
 from dotsecrets.stow import stow, unstow
 from dotsecrets.test import test
@@ -34,8 +34,10 @@ def configure_logging(args):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Manage dotfiles '
+    parser = argparse.ArgumentParser(description='manage dotfiles '
                                                  'with secrets')
+    parser.add_argument('-v', '--version', action='version',
+                        version='%(prog)s {}'.format(VERSION))
     parser.add_argument('--log-level', metavar='LEVEL',
                         choices=log_levels.keys(), default='warning',
                         help="set logging to LEVEL, where LEVEL is "
@@ -52,52 +54,68 @@ def main():
 
     filter_parser = argparse.ArgumentParser(add_help=False)
     filter_parser.add_argument('--filters', metavar='FILE',
-                                help='load filters from FILE')
+                               help='load filters from FILE')
 
     store_parser = argparse.ArgumentParser(add_help=False)
     store_parser.add_argument('--store', metavar='FILE',
                               help='load secrets from FILE')
 
+    init_cmd_parser = subparsers.add_parser('init',
+                                            help='initialize fresh Git '
+                                                 'checkout',
+                                            parents=[filter_parser,
+                                                     store_parser])
+    init_cmd_parser.set_defaults(func=init)
+
     clean_cmd_parser = subparsers.add_parser('clean',
+                                             help='clean filter used '
+                                                  'by Git',
                                              parents=[file_parser,
                                                       filter_parser])
-    clean_cmd_parser.add_argument('name')
+    clean_cmd_parser.add_argument('name',
+                                  help='file within repository to filter')
     clean_cmd_parser.set_defaults(func=clean)
 
     smudge_cmd_parser = subparsers.add_parser('smudge',
+                                              help='smudge filter used '
+                                                   'by Git',
                                               parents=[file_parser,
                                                        filter_parser,
                                                        store_parser])
-    smudge_cmd_parser.add_argument('name')
+    smudge_cmd_parser.add_argument('name',
+                                   help='file within repository to filter')
     smudge_cmd_parser.set_defaults(func=smudge)
 
     dploy_parser = argparse.ArgumentParser(add_help=False)
     dploy_parser.add_argument('--all', dest='source_all',
                               action='store_true',
-                              help='act on all top level directories')
+                              help='act on all topic directories')
     dploy_parser.add_argument('--dry-run', dest='is_dry_run',
                               action='store_true',
                               help='simulate actions')
     dploy_parser.add_argument('source', nargs='*',
-                              help="source directory to act upon")
+                              help='topic directory to act upon')
 
-    stow_cmd_parser = subparsers.add_parser('stow', parents=[dploy_parser])
+    stow_cmd_parser = subparsers.add_parser('stow',
+                                            help='symlink topic to '
+                                                 'home directory',
+                                            parents=[dploy_parser])
     stow_cmd_parser.set_defaults(func=stow)
 
-    unstow_cmd_parser = subparsers.add_parser('unstow', parents=[dploy_parser])
+    unstow_cmd_parser = subparsers.add_parser('unstow',
+                                              help='remove topic symlink '
+                                                   'from home directory',
+                                              parents=[dploy_parser])
     unstow_cmd_parser.set_defaults(func=unstow)
 
-    init_cmd_parser = subparsers.add_parser('init',
-                                            parents=[filter_parser,
-                                                     store_parser])
-    init_cmd_parser.set_defaults(func=init)
-
     test_cmd_parser = subparsers.add_parser('test',
+                                            help='test filter definition',
                                             parents=[filter_parser,
                                                      store_parser])
     test_cmd_parser.add_argument('--keep', action='store_true',
                                  help='keep intermediate files')
-    test_cmd_parser.add_argument('name')
+    test_cmd_parser.add_argument('name',
+                                 help='file within repository to filter')
     test_cmd_parser.set_defaults(func=test)
 
     args = parser.parse_args()
