@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 def check_dotfilters():
     filters_file = get_dotfilters_file()
     if not filters_file.exists():
-        with open(filters_file, 'w', encoding='utf-8') as f:
+        with filters_file.open(mode='w', encoding='utf-8') as f:
             f.write(DOTFILTERS_V2_YAML)
     return True
 
@@ -71,7 +71,7 @@ def check_git_config():
 
 def contains_filter_definition(git_attr_file):
     pattern = re.compile(GIT_ATTR_DOTSECRETS)
-    with open(git_attr_file, 'r', encoding='utf-8') as f:
+    with git_attr_file.open(mode='r', encoding='utf-8') as f:
         for line in f:
             if pattern.match(line):
                 return True
@@ -79,7 +79,7 @@ def contains_filter_definition(git_attr_file):
 
 
 def append_filter_definition(git_attr_file):
-    with open(git_attr_file, 'a', encoding='utf-8') as f:
+    with git_attr_file.open(mode='a', encoding='utf-8') as f:
         f.write('* filter=dotsecrets\n')
 
 

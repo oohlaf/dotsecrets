@@ -10,7 +10,7 @@ dploy = ">=0.1.2"
 [dev-packages]
 
 [requires]
-python_version = "3.7"
+python_version = "3.5"
 
 [packages.e1839a8]
 path = "."

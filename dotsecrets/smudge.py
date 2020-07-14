@@ -74,7 +74,7 @@ def load_all_secrets(secrets_file=None):
     if secrets_file is None:
         secrets_file = get_dotsecrets_file()
     logger.debug("Opening secrets store '%s'.", secrets_file)
-    with open(secrets_file, 'r', encoding='utf-8') as f:
+    with secrets_file.open(mode='r', encoding='utf-8') as f:
         secrets_dict = yaml.load(f)
     logger.debug("Closed secrets store '%s'.", secrets_file)
     return secrets_dict, secrets_file
@@ -95,10 +95,10 @@ def get_smudge_filter(name, secrets_file=None, secrets_dict=None):
 def smudge_stream(input_file, output_file, smudge_filter):
     if 'b' in smudge_filter.read_mode:
         # Binary mode
-        with (open(output_file,
+        with (output_file.open(
                    mode=smudge_filter.write_mode) if output_file != '-'
               else sys.stdout.buffer) as output_stream:
-            with (open(input_file,
+            with (input_file.open(
                        mode=smudge_filter.read_mode) if input_file != '-'
                   else sys.stdin.buffer) as input_stream:
                 while True:
@@ -115,11 +115,11 @@ def smudge_stream(input_file, output_file, smudge_filter):
             sys.stdout.reconfigure(encoding=smudge_filter.encoding)
         if input_file == '-':
             sys.stdin.reconfigure(encoding=smudge_filter.encoding)
-        with (open(output_file,
+        with (output_file.open(
                    mode=smudge_filter.write_mode,
                    encoding=smudge_filter.encoding) if output_file != '-'
               else sys.stdout) as output_stream:
-            with (open(input_file,
+            with (input_file.open(
                        mode=smudge_filter.read_mode,
                        encoding=smudge_filter.encoding) if input_file != '-'
                   else sys.stdin) as input_stream:

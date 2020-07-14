@@ -38,11 +38,13 @@ Run::
 
     $ pip3 install dotsecrets
 
+
 You should then have a ``dotsecrets`` script available in a new shell.
 
 When installing directly from the Git repository [1]_ use::
 
     $ pip3 install .
+
 
 You might need to symlink it into your ``~/bin`` folder::
 
@@ -88,6 +90,7 @@ Its syntax is as follows:
           realname:
             regex: real_name(\s*)=(\s*)(?#QuotedString);
             substitute: real_name\1=\2"(?#Key)";
+
 
 This file contains filter rules for each file that contains secrets. The
 first example defines a filter for replacing passwords in mutt configuration
@@ -163,6 +166,7 @@ Its syntax is as follows:
           realname:
             secret: My Real Name
 
+
 This configuration file contains two filters for mutt and irssi. Each
 filter contains one or more secrets. These secrets are used to filter the
 files in the Git repository for sensitive data. Each secret has an optional
@@ -179,6 +183,7 @@ Contents of ``.gitattributes``::
 
     * filter=dotsecrets
 
+
 When checking in files with Git, the clean command is run for those files that
 match the pattern given in ``.gitattributes``. When checking out files that
 have a filter defined, the smudge command substitutes the secrets again.
@@ -188,6 +193,7 @@ To add these filters run the following commands::
     $ git config filter.dotsecrets.clean "dotsecrets clean %f"
     $ git config filter.dotsecrets.smudge "dotsecrets smudge %f"
     $ git config filter.dotsecrets.required true
+
 
 They result in the following addition to your ``.git/config`` file:
 
@@ -218,6 +224,14 @@ Example::
     $ dotsecrets init
 
 
+The following error indicates you do not yet have a secrets file. Either
+create the file as described in the secrets section or copy your existing
+file from another machine here.
+
+    $ dotsecrets init
+    [Errno 2] No such file or directory: '/home/user/.config/dotsecrets/dotsecrets.yaml'
+
+
 Stow and Unstow
 ---------------
 
@@ -233,6 +247,7 @@ dotfilters repository.
 Example::
 
     $ dotsecrets stow mutt irssi
+
 
 This will stow both topics.
 
@@ -256,8 +271,8 @@ Defining regular expressions for new filters might require some practise.
 To test your filter definitions a ``test`` command is available::
 
     $ dotsecrets test irssi/.irssi/config
-    --- /home/olaf/src/dotfiles/irssi/.irssi/config 2019-07-15 22:40:03.782600150 +0200
-    +++ /home/olaf/src/dotfiles/irssi/.irssi/config.dotclean        2019-07-17 21:23:22.813039617 +0200
+    --- /home/user/dotfiles/irssi/.irssi/config 2019-07-15 22:40:03.782600150 +0200
+    +++ /home/user/dotfiles/irssi/.irssi/config.dotclean        2019-07-17 21:23:22.813039617 +0200
     @@ -286,8 +286,8 @@
 
      settings = {
@@ -269,6 +284,7 @@ To test your filter definitions a ``test`` command is available::
        };
        "fe-text" = { actlist_sort = "refnum"; scrollback_lines = "2000"; };
        "fe-common/core" = {
+
 
 Two intermediate files are created: ``config.dotclean`` and
 ``config.dotsmudge``. The difference is shown between the original source
@@ -280,8 +296,8 @@ the original source file. If that is not the case, the difference is shown.
 Suppose a typo was made in the secrets store::
 
     $ dotsecrets test irssi/.irssi/config
-    --- /home/olaf/src/dotfiles/irssi/.irssi/config 2019-07-15 22:40:03.782600150 +0200
-    +++ /home/olaf/src/dotfiles/irssi/.irssi/config.dotclean        2019-07-17 21:23:22.813039617 +0200
+    --- /home/user/dotfiles/irssi/.irssi/config 2019-07-15 22:40:03.782600150 +0200
+    +++ /home/user/dotfiles/irssi/.irssi/config.dotclean        2019-07-17 21:23:22.813039617 +0200
     @@ -286,8 +286,8 @@
 
      settings = {
@@ -293,8 +309,8 @@ Suppose a typo was made in the secrets store::
        };
        "fe-text" = { actlist_sort = "refnum"; scrollback_lines = "2000"; };
        "fe-common/core" = {
-    --- /home/olaf/src/dotfiles/irssi/.irssi/config 2019-07-17 21:27:21.118130339 +0200
-    +++ /home/olaf/src/dotfiles/irssi/.irssi/config.dotsmudge       2019-07-17 21:36:48.327586627 +0200
+    --- /home/user/dotfiles/irssi/.irssi/config 2019-07-17 21:27:21.118130339 +0200
+    +++ /home/user/dotfiles/irssi/.irssi/config.dotsmudge       2019-07-17 21:36:48.327586627 +0200
     @@ -287,7 +287,7 @@
      settings = {
        core = {
@@ -304,8 +320,9 @@ Suppose a typo was made in the secrets store::
        };
        "fe-text" = { actlist_sort = "refnum"; scrollback_lines = "2000"; };
        "fe-common/core" = {
-    Source '/home/olaf/src/dotfiles/irssi/.irssi/config' and smudged source differ
+    Source '/home/user/dotfiles/irssi/.irssi/config' and smudged source differ
     Please adjust filter definition or validate your stored secrets
+
 
 In the example above, key nick was set to myname not mynick in the secrets
 store. When the execution finishes, the intermediate files are deleted. If

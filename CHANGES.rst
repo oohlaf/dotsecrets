@@ -1,6 +1,10 @@
 Changes
 =======
 
+0.3.2 (2020-07-14)
+------------------
+- Make code compatible with Python 3.5
+
 0.3.1 (2019-07-25)
 ------------------
 - Testing on PyPI resulted in stricter dependencies

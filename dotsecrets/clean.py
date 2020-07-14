@@ -119,7 +119,7 @@ def load_all_filters(filters_file=None):
     if filters_file is None:
         filters_file = get_dotfilters_file()
     logger.debug("Opening filters file '%s'.", filters_file)
-    with open(filters_file, 'r', encoding='utf-8') as f:
+    with filters_file.open(mode='r', encoding='utf-8') as f:
         filters_dict = yaml.load(f)
     logger.debug("Closed filters file '%s'.", filters_file)
     return filters_dict, filters_file
@@ -140,10 +140,10 @@ def get_clean_filter(name, filters_file=None, filters_dict=None):
 def clean_stream(input_file, output_file, clean_filter):
     if 'b' in clean_filter.read_mode:
         # Binary mode
-        with (open(output_file,
+        with (output_file.open(
                    mode=clean_filter.write_mode) if output_file != '-'
               else sys.stdout.buffer) as output_stream:
-            with (open(input_file,
+            with (input_file.open(
                        mode=clean_filter.read_mode) if input_file != '-'
                   else sys.stdin.buffer) as input_stream:
                 while True:
@@ -160,11 +160,11 @@ def clean_stream(input_file, output_file, clean_filter):
             sys.stdout.reconfigure(encoding=clean_filter.encoding)
         if input_file == '-':
             sys.stdin.reconfigure(encoding=clean_filter.encoding)
-        with (open(output_file,
+        with (output_file.open(
                    mode=clean_filter.write_mode,
                    encoding=clean_filter.encoding) if output_file != '-'
               else sys.stdout) as output_stream:
-            with (open(input_file,
+            with (input_file.open(
                        mode=clean_filter.read_mode,
                        encoding=clean_filter.encoding) if input_file != '-'
                   else sys.stdin) as input_stream:
