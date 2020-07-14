@@ -1,3 +1,8 @@
+.. image:: https://www.buymeacoffee.com/assets/img/guidelines/download-assets-sm-2.svg
+    :target: https://www.buymeacoffee.com/olaf
+    :alt: Buy Me A Coffee!
+
+
 DotSecrets
 ==========
 
