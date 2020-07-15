@@ -116,9 +116,7 @@ Making a release
     removing the fourth element. Make sure to follow PEP-440 [1]_ and the
     semantic versioning guidelines [2]_.
 
-    Typically the diff would look like this:
-
-	.. code-block:: udiff
+    Typically the diff would look like this::
 
         (venv) ~/src/dotsecrets$ git diff dotsecrets/metadata.py
         diff --git a/dotsecrets/metadata.py b/dotsecrets/metadata.py
@@ -359,9 +357,7 @@ Starting next development cycle
 	version tuple. The version should follow PEP-440 [1]_ and the
     semantic versioning guidelines [2]_.
 
-    Typically the diff would look like this:
-
-	.. code-block:: udiff
+    Typically the diff would look like this::
 
         (venv) ~/src/dotsecrets$ git diff dotsecrets/metadata.py
         diff --git a/dotsecrets/metadata.py b/dotsecrets/metadata.py
