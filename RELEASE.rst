@@ -133,6 +133,7 @@ Making a release
 
 5.  Commit the version change::
 
+        (venv) ~/src/dotsecrets$ git add dotsecrets/metadata.py
         (venv) ~/src/dotsecrets$ git commit -m "Ready for release v0.3.3"
 
 
