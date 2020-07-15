@@ -1,6 +1,10 @@
 Changes
 =======
 
+0.5 (devel)
+-----------
+- TODO
+
 0.4 (2020-07-15)
 ----------------
 - Forgot to mark the changes list as final with a date

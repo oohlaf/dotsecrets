@@ -375,9 +375,27 @@ Starting next development cycle
           __version__ = '.'.join(map(str, __version_info__))
 
 
-2.  Commit the version change::
+2.  Add new entry to CHANGES.rst::
 
-        (venv) ~/src/dotsecrets$ git add dotsecrets/metadata.py
+        (venv) ~/src/dotsecrets$ git diff
+        diff --git a/CHANGES.rst b/CHANGES.rst
+        index 36b1b6e..2652da6 100644
+        --- a/CHANGES.rst
+        +++ b/CHANGES.rst
+        @@ -1,6 +1,10 @@
+         Changes
+         =======
+        
+        +0.3.4 (devel)
+        +-----------
+        +- TODO
+        +
+         0.3.3 (2020-07-15)
+
+
+3.  Commit the version change::
+
+        (venv) ~/src/dotsecrets$ git add dotsecrets/metadata.py CHANGES.rst
         (venv) ~/src/dotsecrets$ git commit -m "Start development v0.3.4.dev0"
 
 
