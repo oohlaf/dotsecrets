@@ -4,6 +4,7 @@ from dploy import stowcmd
 from pathlib import Path
 
 from dotsecrets.utils import get_dotfiles_path, is_sub_path
+from dotsecrets.compat import resolve
 
 
 logger = logging.getLogger(__name__)
@@ -26,7 +27,7 @@ def check_args_source(args, dotfiles_path):
     else:
         args_sources = args.source
     for src in args_sources:
-        src_path = Path(src).resolve(strict=True)
+        src_path = resolve(Path(src), strict=True)
         if src_path.parent == dotfiles_path:
             sources.append(src_path)
         else:
@@ -36,7 +37,7 @@ def check_args_source(args, dotfiles_path):
 
 
 def stow(args):
-    dotfiles_path = get_dotfiles_path().resolve(strict=True)
+    dotfiles_path = resolve(get_dotfiles_path(), strict=True)
     dest_path = Path.home()
     sources = check_args_source(args, dotfiles_path)
     if not sources:
@@ -51,7 +52,7 @@ def stow(args):
 
 
 def unstow(args):
-    dotfiles_path = get_dotfiles_path().resolve(strict=True)
+    dotfiles_path = resolve(get_dotfiles_path(), strict=True)
     dest_path = Path.home()
     sources = check_args_source(args, dotfiles_path)
     if not sources:
