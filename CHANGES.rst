@@ -1,6 +1,10 @@
 Changes
 =======
 
+0.3.3 (devel)
+-------------
+-
+
 0.3.2 (2020-07-14)
 ------------------
 - Make code compatible with Python 3.5
