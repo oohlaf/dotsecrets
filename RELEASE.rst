@@ -325,7 +325,7 @@ Making a release
 
 12. If something is not as expected, do not upload a new version to PyPI,
     Troubleshoot and fix issues (or ultimately revert the version back
-	to development).
+    to development).
 
 13. When all is as expected tag the release::
 
@@ -354,7 +354,7 @@ Starting next development cycle
 
 1.  Change the version number to start next development cycle by
     adjusting ``dotsecrets/metadata.py``. Add a fourth element to the
-	version tuple. The version should follow PEP-440 [1]_ and the
+    version tuple. The version should follow PEP-440 [1]_ and the
     semantic versioning guidelines [2]_.
 
     Typically the diff would look like this::
