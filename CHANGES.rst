@@ -3,7 +3,8 @@ Changes
 
 0.3.3 (devel)
 -------------
--
+- Remove PosixPath arguments from shutil methods for compatibility
+  with Python 3.5
 
 0.3.2 (2020-07-14)
 ------------------

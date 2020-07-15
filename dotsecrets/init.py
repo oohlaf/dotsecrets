@@ -114,8 +114,8 @@ def initial_smudge(filters_file, secrets_file):
         dest_file = source_file.with_name(source_file.name + '.' +
                                           random_string)
         smudge_stream(source_file, dest_file, smudge_filter)
-        shutil.copystat(source_file, dest_file)
-        shutil.chown(dest_file, source_stat.st_uid, source_stat.st_gid)
+        shutil.copystat(str(source_file), str(dest_file))
+        shutil.chown(str(dest_file), source_stat.st_uid, source_stat.st_gid)
         dest_file.rename(source_file)
     try:
         subprocess.run(['git', 'diff', '--exit-code'],
