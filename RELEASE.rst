@@ -331,7 +331,7 @@ Making a release
 13. When all is as expected tag the release::
 
         ~/src/dotsecrets$ source venv/bin/activate
-        (venv) ~/src/dotsecrets$ git tag -a "v0.3.3" -m "Tag release v0.3.2"
+        (venv) ~/src/dotsecrets$ git tag -a "v0.3.3" -m "Tag release v0.3.3"
         (venv) ~/src/dotsecrets$ git push --tags
 
 
