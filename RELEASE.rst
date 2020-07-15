@@ -332,7 +332,6 @@ Making a release
 
         ~/src/dotsecrets$ source venv/bin/activate
         (venv) ~/src/dotsecrets$ git tag -a "v0.3.3" -m "Tag release v0.3.3"
-        (venv) ~/src/dotsecrets$ git push --tags
 
 
 14. Upload the final release version to PyPI::
@@ -348,6 +347,11 @@ Making a release
         
         View at:
         https://pypi.org/project/dotsecrets/0.3.3/
+
+
+15. Push release to Github::
+
+        (venv) ~/src/dotsecrets$ git push --tags
 
 
 Starting next development cycle
