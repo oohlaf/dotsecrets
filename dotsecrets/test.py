@@ -15,7 +15,7 @@ def check_test_results(source_file, clean_file, smudge_file):
                 source_file)
     try:
         subprocess.run(['diff', '-u',
-                        source_file, clean_file],
+                        str(source_file), str(clean_file)],
                        # stdout=subprocess.DEVNULL,
                        check=True)
     except subprocess.CalledProcessError:
@@ -28,7 +28,7 @@ def check_test_results(source_file, clean_file, smudge_file):
                 source_file)
     try:
         subprocess.run(['diff', '-u',
-                        source_file, smudge_file],
+                        str(source_file), str(smudge_file)],
                        # stdout=subprocess.DEVNULL,
                        check=True)
     except subprocess.CalledProcessError:
