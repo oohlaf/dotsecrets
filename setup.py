@@ -32,6 +32,7 @@ setup(name=META['PACKAGE_NAME'],
                   'into your home directory similar to Stow.',
       long_description='\n' + README + '\n\n' + CHANGES,
       license=META['LICENSE'],
+      license_files='LICENSE',
       classifiers=[
           "License :: OSI Approved :: BSD License",
           "Development Status :: 4 - Beta",
