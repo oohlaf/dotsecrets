@@ -1,12 +1,19 @@
 Changes
 =======
 
-0.3.3 (devel)
--------------
+0.4 (2020-07-15)
+----------------
+- Forgot to mark the changes list as final with a date
+- Decided version 0.4 would be better
+- Fixed git tag and minor tweaks to release document
+
+0.3.3 (2020-07-15)
+------------------
 - Remove PosixPath arguments from shutil methods for compatibility
   with Python 3.5
 - Reconfigure text encodings is only available on stdin and stdout
   on Python 3.7+, changing to use io.TextIOWrapper
+- More small tweaks for Python 3.5
 
 0.3.2 (2020-07-14)
 ------------------

@@ -329,10 +329,12 @@ Making a release
     to development). If any repository changes have been made since step 6,
 	go back to step 6 to recreate the distribution and start over.
 
-13. When all is as expected tag the release::
+13. When all is as expected push and tag the release::
 
         ~/src/dotsecrets$ source venv/bin/activate
+        (venv) ~/src/dotsecrets$ git push
         (venv) ~/src/dotsecrets$ git tag -a "v0.3.3" -m "Tag release v0.3.3"
+        (venv) ~/src/dotsecrets$ git push --tags
 
 
 14. Upload the final release version to PyPI::
@@ -340,7 +342,7 @@ Making a release
         (venv) ~/src/dotsecrets$ python -m twine upload dist/*
         Enter your username:
         Enter your password:
-        Uploading distributions to https://pypi.org/legacy/
+        Uploading distributions to https://upload.pypi.org/legacy/
         Uploading dotsecrets-0.3.3-py3-none-any.whl
         100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 43.4k/43.4k [00:02<00:00, 16.0kB/s]
         Uploading dotsecrets-0.3.3.tar.gz
@@ -348,11 +350,6 @@ Making a release
         
         View at:
         https://pypi.org/project/dotsecrets/0.3.3/
-
-
-15. Push release to Github::
-
-        (venv) ~/src/dotsecrets$ git push --tags
 
 
 Starting next development cycle
@@ -380,6 +377,7 @@ Starting next development cycle
 
 2.  Commit the version change::
 
+        (venv) ~/src/dotsecrets$ git add dotsecrets/metadata.py
         (venv) ~/src/dotsecrets$ git commit -m "Start development v0.3.4.dev0"
 
 
