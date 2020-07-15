@@ -326,7 +326,8 @@ Making a release
 
 12. If something is not as expected, do not upload a new version to PyPI,
     Troubleshoot and fix issues (or ultimately revert the version back
-    to development).
+    to development). If any repository changes have been made since step 6,
+	go back to step 6 to recreate the distribution and start over.
 
 13. When all is as expected tag the release::
 
