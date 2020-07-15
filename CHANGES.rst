@@ -5,6 +5,8 @@ Changes
 -------------
 - Remove PosixPath arguments from shutil methods for compatibility
   with Python 3.5
+- Reconfigure text encodings is only available on stdin and stdout
+  on Python 3.7+, changing to use io.TextIOWrapper
 
 0.3.2 (2020-07-14)
 ------------------

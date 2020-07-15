@@ -112,17 +112,21 @@ def smudge_stream(input_file, output_file, smudge_filter):
     else:
         # Text mode
         if output_file == '-':
-            sys.stdout.reconfigure(encoding=smudge_filter.encoding)
+            sys_stdout = io.TextIOWrapper(sys.stdout.buffer,
+                    encoding=smudge_filter.encoding)
+            # sys.stdout.reconfigure(encoding=smudge_filter.encoding)
         if input_file == '-':
-            sys.stdin.reconfigure(encoding=smudge_filter.encoding)
+            sys_stdin = io.TextIOWrapper(sys.stdin.buffer,
+                    encoding=smudge_filter.encoding)
+            # sys.stdin.reconfigure(encoding=smudge_filter.encoding)
         with (output_file.open(
                    mode=smudge_filter.write_mode,
                    encoding=smudge_filter.encoding) if output_file != '-'
-              else sys.stdout) as output_stream:
+              else sys_stdout) as output_stream:
             with (input_file.open(
                        mode=smudge_filter.read_mode,
                        encoding=smudge_filter.encoding) if input_file != '-'
-                  else sys.stdin) as input_stream:
+                  else sys_stdin) as input_stream:
                 while True:
                     try:
                         line = input_stream.readline()
