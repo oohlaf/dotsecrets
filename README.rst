@@ -231,7 +231,7 @@ Example::
 
 The following error indicates you do not yet have a secrets file in place.
 Either create the file as described in the secrets section or copy your
-existing file from another machine.::
+existing file from another machine::
 
     $ dotsecrets init
     [Errno 2] No such file or directory: '/home/user/.config/dotsecrets/dotsecrets.yaml'
