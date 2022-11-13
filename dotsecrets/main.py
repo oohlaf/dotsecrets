@@ -3,6 +3,8 @@ import argparse
 import logging
 import sys
 
+from pathlib import Path
+
 from dotsecrets.clean import clean
 from dotsecrets.init import init
 from dotsecrets.metadata import VERSION
@@ -54,11 +56,11 @@ def main():
 
     filter_parser = argparse.ArgumentParser(add_help=False)
     filter_parser.add_argument('--filters', metavar='FILE',
-                               help='load filters from FILE')
+                               help='load filters from FILE', type=Path)
 
     store_parser = argparse.ArgumentParser(add_help=False)
     store_parser.add_argument('--store', metavar='FILE',
-                              help='load secrets from FILE')
+                              help='load secrets from FILE', type=Path)
 
     init_cmd_parser = subparsers.add_parser('init',
                                             help='initialize fresh Git '
