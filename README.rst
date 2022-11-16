@@ -11,7 +11,7 @@ your dotfiles in Git, including those with private information.
 
 By storing your configuration files in a public Git repository, you can
 synchronize your settings between multiple devices or share them with
-others. Any private information is kept in a single file store outside
+others. Any private information is kept in a single file stored outside
 the repository. It's up to the user to transport this file between devices.
 
 This tool is similar in functionality to Briefcase [2]_ but differs
