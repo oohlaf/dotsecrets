@@ -1,9 +1,9 @@
 Changes
 =======
 
-0.5 (devel)
+0.4.1 (devel)
 -----------
-- TODO
+- Add type to cmd FILE arguments by Marzzzello (PR-17)
 
 0.4 (2020-07-15)
 ----------------
@@ -45,6 +45,7 @@ Changes
 ----------------
 - Add console script
 - Code clean up, fix pylint warnings
+- Setup script fixes by Jesse (PR-1)
 
 0.0 (2013-05-11)
 ----------------
