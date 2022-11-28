@@ -1,6 +1,6 @@
 from datetime import datetime as dt
 
-__version_info__ = (0, 4, 1, "dev0")
+__version_info__ = (0, 4, 1)
 __version__ = '.'.join(map(str, __version_info__))
 
 
