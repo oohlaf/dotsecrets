@@ -1,8 +1,8 @@
 Changes
 =======
 
-0.4.1 (devel)
------------
+0.4.1 (2022-11-28)
+------------------
 - Add type to cmd FILE arguments by Marzzzello (PR-17)
 
 0.4 (2020-07-15)
